@@ -7,7 +7,7 @@
 * [@rappopo/dab-knex](https://github.com/rappopo/dab-knex) for KnexJS
 * [@rappopo/dab-memory](https://github.com/rappopo/dab-memory) a custom lodash based memory database
 * [@rappopo/dab-mongo](https://github.com/rappopo/dab-mongo) for MongoDB
-* [@rappopo/dab-ne](https://github.com/rappopo/dab-couch) for NeDB
+* [@rappopo/dab-ne](https://github.com/rappopo/dab-ne) for NeDB
 * [@rappopo/dab-pouch](https://github.com/rappopo/dab-pouch) for PouchDB
 * [@rappopo/dab-redis](https://github.com/rappopo/dab-redis) for Redis
 

@@ -1,10 +1,10 @@
 {
   "name": "@rappopo/dab",
   "version": "0.0.1",
-  "description": "The most useless data access layer! Ever!",
+  "description": "Collection of the most useless data access layers! Ever!",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --exit"
   },
   "keywords": [
     "dab",
