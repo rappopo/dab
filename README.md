@@ -1,5 +1,7 @@
 # @rappopo/dab
 
+## Adapters
+
 ## License
 
 (The MIT License)
