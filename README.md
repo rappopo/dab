@@ -2,6 +2,8 @@
 
 ## Adapters
 
+
+
 ## License
 
 (The MIT License)
