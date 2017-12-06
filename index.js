@@ -59,7 +59,7 @@ class Dab {
   }
 
   /**
-  * Privates
+  * Private
   */
 
   _defConverter (doc = {}) {
@@ -78,7 +78,7 @@ class Dab {
   }
 
   /**
-  * Main methods
+  * Main method
   */
 
   find (params) {
@@ -118,15 +118,47 @@ class Dab {
   }
 
   /**
-  * Aliases
+  * Alias
   */
+
+  add (body, params) {
+    return this.create(body, params)
+  }
+
+  bulkAdd (body, params) {
+    return this.bulkCreate(body, params)
+  }
+
+  insert (body, params) {
+    return this.create(body, params)
+  }
+
+  bulkInsert (body, params) {
+    return this.bulkCreate(body, params)
+  }
+
+  edit (id, body, params) {
+    return this.update(id, body, params)
+  }
+
+  bulkEdit (body, params) {
+    return this.bulkUpdate(body, params)
+  }
 
   delete (id, params) {
     return this.remove(id, params)
   }
 
+  bulkDelete (body, params) {
+    return this.bulkRemove(body, params)
+  }
+
   destroy (id, params) {
     return this.remove(id, params)
+  }
+
+  bulkDestroy (body, params) {
+    return this.bulkRemove(body, params)
   }
   
 }
