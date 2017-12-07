@@ -1,11 +1,13 @@
 'use strict'
 
-const _ = require('lodash')
+const _ = require('lodash'),
+  uuid = require('uuid/v4')
 
 class Dab {
   constructor (options = {}) {
     this.client = null
     this._ = _
+    this.uuid = uuid,
     this.options = {}
     this.setOptions(options)
   }
