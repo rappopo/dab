@@ -1,0 +1,1 @@
+# bulkRemove(body, params)

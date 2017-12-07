@@ -45,6 +45,6 @@ It should return object according to this schema:
 }
 ```
 
-If no documents could be found, it should **NOT** yield error. Instead, it sould return an empty data with total = 0.
+If no document found, it should **NOT** yield error. Instead, it sould return an empty data with total = 0.
 
 `total` is the total number of documents found matched with your query. Optional, but strongly recommended to return this value.
