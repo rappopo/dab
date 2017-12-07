@@ -3,6 +3,8 @@
 const _ = require('lodash'),
   uuid = require('uuid/v4')
 
+require('promise.ascallback').patch()
+
 class Dab {
   constructor (options = {}) {
     this.client = null

@@ -1,6 +1,6 @@
 {
   "name": "@rappopo/dab",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Collection of the most useless data access layers! Ever!",
   "main": "index.js",
   "scripts": {
@@ -16,6 +16,12 @@
   "license": "MIT",
   "dependencies": {
     "lodash": "^4.17.4",
+    "promise.ascallback": "^1.0.0",
     "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "chai-subset": "^1.6.0"
   }
 }

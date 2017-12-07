@@ -2,76 +2,42 @@
 
 ## Methods
 
-All methods return promises. 
-
-`find (params)`: query specific document from selected database using MongoDB-like query language. As parameter, pass the following object:
-
-* `query`: query in MongoDB-like query syntax. Optional, defaults: {} (match all).
-* `sort`: sort order, as an array of object. Optional. Example:
-
-	[{ name: 'asc', age: 'desc' }] 
-
-* `limit`: max. number of documents in one page. Optional, default: 25. Overrideable through options object.
-* `page`: page number, starting from 1. Optional, defaults: 1
+All methods return promises. Callback also available by calling `.asCallback(fn)`
 
 Example:
 
-	{
-		query: {
-			age: 20
-		},
-		page: 1,
-		limit: 25
-	}
+```javascript
+...
+// promise-way
+findOne('my-doc')
+.then(function (result) {
+  console.log(result)
+})
+.catch(function (err) {
+  console.log(err)
+})
 
-It should return object according to this schema:
+// callback-way
+findOne('my-doc').asCallback(function (err, result) {
+  if (err)
+    console.log(err)
+  else
+    console.log(result)
+})
+```
 
-	{
-		success: true,
-		total: 120,
-		data: [
-			{ id: 'james-bond', name: 'James Bond', age: 20 },
-			{ id: 'jack-bauer', name: 'Jack Bauer', age: 20 },
-			{ id: 'jason-bourne', name: 'Jason Bourne', age: 20 },
-			...
-		]
-	}
-
-If no documents could be found, it should **NOT** yield error. Instead, it sould return an empty data with total = 0.
-
-`findOne (id, params)`: find document matched with id provided. It should return object according to this schema:
-
-	{
-		success: true,
-		data: {
-			_id: 'mydoc',
-			title: 'My Secret Document',
-			....
-		}
-	}
-
-In case of error, it should return a normal node error object.
-If one provides wrong id, it should also be considered as an error with the message: **Not found**
-
-`create (body, params)`: create a new document. 
-
-Body is a javascript object. if **id** is NOT provided, it should be created automatically. It should return the same object as above.
-
-If object already exists, it should yield an error with the message: **Exists**
-
-`update (id, body, params)`: update an existing document
-
-`remove (id, params)`: remove an existing document
-
-`bulkCreate (body, params)`: create many new documents in one shot
-
-`bulkUpdate (body, params)`: update many existing documents in one shot
-
-`bulkRemove (body, params)`: remove many existing documents in one shot
+* [`find (params)`](doc/FIND.md): query specific document from selected database using MongoDB-style query language
+* [`findOne (id, params)`](doc/FINDONE.md): find document matched with id provided
+* [`create (body, params)`](doc/CREATE.md): create a new document
+* [`update (id, body, params)`](doc/UPDATE.md): update an existing document
+* [`remove (id, params)`](doc/REMOVE.md): remove an existing document
+* [`bulkCreate (body, params)`](doc/BULKCREATE.md): create many new documents in one call
+* [`bulkUpdate (body, params)`](doc/BULKUPDATE.md): update many existing documents in one call
+* [`bulkRemove (body, params)`](doc/BULKREMOVE.md): remove many existing documents in one call
 
 ## Implementation
 
-* [@rappopo/dab-couch](https://github.com/rappopo/dab-couch) for CouchDB
+* [@rappopo/dab-couch](https://github.com/rappopo/dab-couch) for CouchDB 2.0 and above
 * [@rappopo/dab-es](https://github.com/rappopo/dab-es) for Elasticsearch
 * [@rappopo/dab-knex](https://github.com/rappopo/dab-knex) for KnexJS
 * [@rappopo/dab-memory](https://github.com/rappopo/dab-memory) a custom lodash based memory database
@@ -79,6 +45,11 @@ If object already exists, it should yield an error with the message: **Exists**
 * [@rappopo/dab-ne](https://github.com/rappopo/dab-ne) for NeDB
 * [@rappopo/dab-pouch](https://github.com/rappopo/dab-pouch) for PouchDB
 * [@rappopo/dab-redis](https://github.com/rappopo/dab-redis) for Redis
+
+## Misc
+
+* Donation: Bitcoin **16HVCkdaNMvw3YdBYGHbtt3K5bmpRmH74Y**
+
 
 ## License
 
