@@ -34,6 +34,8 @@ findOne('my-doc').asCallback(function (err, result) {
 * [`bulkCreate (body, params)`](doc/BULKCREATE.md): create many new documents in one call
 * [`bulkUpdate (body, params)`](doc/BULKUPDATE.md): update many existing documents in one call
 * [`bulkRemove (body, params)`](doc/BULKREMOVE.md): remove many existing documents in one call
+* [`copyFrom (source, params)`](doc/COPYFROM.md): copy from another datasource or json file to the current one
+* [`copyTo (dest, params)`](doc/COPYTO.md): copy from actual datasource to another one or save as json file
 
 ## Implementation
 
