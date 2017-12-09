@@ -1,6 +1,7 @@
 'use strict'
 
 const _ = require('lodash'),
+  fs = require('fs'),
   uuid = require('uuid/v4')
 
 require('promise.ascallback').patch()
@@ -119,6 +120,120 @@ class Dab {
 
   bulkRemove(body, params) {
     return this._notImplemented()    
+  }
+
+  /**
+  * Util
+  */
+
+  _copy(src, dest, params = {}) {
+    params.limit = params.limit || this.options.limit
+    params.query = params.query || {}
+    let me = this, endResults = []
+
+    function loop(pageNumber, callback) {
+      src.find({
+        query: params.query,
+        limit: params.limit,
+        page: pageNumber
+      }).asCallback((err, result) => {
+        if (err)
+          return callback(err)
+        if (result.data.length === 0)
+          return callback()
+        dest.bulkCreate(result.data, { withDetail: params.withDetail }).asCallback((err, result) => {
+          if (err)
+            return callback(err)
+          endResults.push(result)
+          loop(pageNumber + 1, callback)
+        }) 
+      })
+    }
+
+    return new Promise((resolve, reject) => {
+      loop(1, (err, result) => {
+        if (err)
+          return reject(err)
+        let data = {
+          success: true,
+          stat: {
+            ok: 0,
+            fail: 0,
+            total: 0
+          }
+        }
+        if (params.withDetail)
+          data.detail = []
+
+        _.each(endResults, s => {
+          data.stat.ok = data.stat.ok + s.stat.ok
+          data.stat.fail = data.stat.fail + s.stat.fail
+          data.stat.total = data.stat.total + s.stat.total
+          if (params.withDetail)
+            data.detail = data.detail.concat(s.detail)
+        })
+        resolve(data)
+      })
+    })
+  }
+
+  copyFrom(src, params = {}) {
+    if (typeof src !== 'string')
+      return this._copy(src, this, params)
+    return new Promise((resolve, reject) => {
+      try {
+        const body = JSON.parse(fs.readFileSync(src, 'utf8'))
+        this.bulkCreate(body, params)
+        .then(resolve)
+        .catch(reject)
+      } catch(err) {
+        reject(err)
+      }
+    })
+  }
+
+  copyTo(dest, params = {}) {
+    if (typeof dest !== 'string')
+      return this._copy(this, dest, params)
+
+    let total = 0, me = this
+
+    function loop(pageNumber, callback) {
+      me.find({
+        query: params.query,
+        limit: params.limit,
+        page: pageNumber
+      }).asCallback((err, result) => {
+        if (err)
+          return callback(err)
+        if (result.data.length === 0)
+          return callback()
+        me._.each(result.data, d => {
+          let prefix = total === 0 ? '' : ',\n'
+          fs.appendFileSync(dest, prefix + JSON.stringify(d))
+        })
+        total += result.data.length
+        loop(pageNumber + 1, callback)
+      })
+    }
+
+    return new Promise((resolve, reject) => {
+      try {
+        fs.writeFileSync(dest, '[')
+        loop(1, (err, result) => {
+          fs.appendFileSync(dest, ']\n')
+          let data = {
+            success: true,
+            stat: {
+              total: total
+            }
+          }
+          resolve(data)
+        })
+      } catch (err) {
+        reject(err)
+      }
+    })
   }
 
   /**

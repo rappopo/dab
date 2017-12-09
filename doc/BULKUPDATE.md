@@ -15,9 +15,17 @@ Body is always an array of objects. Every object needs to have an **id**, otherw
 ]
 ```
 
+## Parameter (optional)
+
+The optional parameter object:
+
+`withDetail`: if *true*, details of operation will be returned. It is an array of objects in the same order as body request above. See example below.
+
 ## Response
 
-Method should always return a response, eventhough one or more update could fail. If failed, those corresponding rows should tell why it failed. The order of update result should match with the order of body request.
+Method should always return a response, eventhough one or more update could fail. If failed, those corresponding rows should tell why it failed, if enabled through `withDetail` parameter above.
+
+The order of update result should match with the order of body request.
 
 Promise rejection error should only occour when something very bad happened within the script.
 
@@ -31,7 +39,7 @@ Example:
     fail: 2,
     total: 3
   },
-  data: [
+  detail: [
     { _id: 'james-bond', success: true },
     { _id: 'jack-bauer-001', success: false, message: 'Not found' },
     { _id: '337b116d-650e-4581-8bef-7b119467b05c', success: false, message: 'Not found' }

@@ -1,7 +1,7 @@
 {
   "name": "@rappopo/dab",
-  "version": "0.0.5",
-  "description": "Collection of the most useless data access layers! Ever!",
+  "version": "0.0.6",
+  "description": "For dummies! Collection of the most useless data access layers! Ever!",
   "main": "index.js",
   "scripts": {
     "test": "mocha --exit"
