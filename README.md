@@ -8,7 +8,7 @@ But if you're a dummy like me, then welcome to the party! Yay!! Finally a databa
 
 Rappopo DAB is a kind of database abstraction layer which focuses on how to access and work with data easily. It won't be a very sophisticated and overly complex library. On the contrary, it'll only support the most basic operations. Not because we don't need it, but simply because I'm too stupid & lazy to write one :)
 
-In my work as a lousy programmer right now, I have to work with many different database. Be it relational or NoSQL. And through all the times, I have face the same problem over and over again: different ways to access the data, learning it's query language, and the list grows very quickly.
+In my work as a lousy programmer right now, I have to work with many different database. Be it relational or NoSQL. And through all the times, I have to face the same problem over and over again: different ways to access the data, learning it's query language, and so on. The list grows very quickly.
 
 That's why this project is born. It should helps lazy and stupid people like me to get more time to drink beer. Not learning a new alien language over-and-over again.
 
