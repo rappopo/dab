@@ -12,6 +12,10 @@
     "data",
     "access"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rappopo/dab.git"
+  },
   "author": "Ardhi Lukianto <ardhi@lukianto.com>",
   "license": "MIT",
   "dependencies": {

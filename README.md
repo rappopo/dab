@@ -1,8 +1,16 @@
 # @rappopo/dab
 
+**WARNING**: all of this is for node dummies only!!! If you're considered yourself as a kungfu master, than you'd probably better take a look for masterpieces like [Waterline](https://github.com/balderdashy/waterline) or [Sequelize](https://github.com/sequelize/sequelize) instead!!!
+
+But if you're a dummy like me, then welcome to the party! Yay!! Finally a database access for fools!!! With lots of stuff and magic!!!!
+
+## Overview
+
+...
+
 ## Methods
 
-All methods return promises. Callback also available by calling `.asCallback(fn)`
+All methods should return promises. Callback can be used by chaining the promise with `.asCallback(fn)`
 
 Example:
 
@@ -36,6 +44,7 @@ findOne('my-doc').asCallback(function (err, result) {
 * [`bulkRemove (body, params)`](doc/BULKREMOVE.md): remove many existing documents in one call
 * [`copyFrom (source, params)`](doc/COPYFROM.md): copy from another datasource or json file to the current one
 * [`copyTo (dest, params)`](doc/COPYTO.md): copy from actual datasource to another one or save as json file
+* [Method aliases](doc/ALIAS.md)
 
 ## Implementation
 

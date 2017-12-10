@@ -19,7 +19,7 @@ Body is always an array of objects. If no **id** is found in the object, it'll b
 
 The optional parameter object:
 
-`withDetail`: if *true*, details of operation will be returned. It is an array of objects in the same order as body request above. See example below.
+`withDetail`: default is *false*. If *true*, details of operation will be returned. It is an array of objects in the same order as body request above. See example below.
 
 ## Response
 
