@@ -22,7 +22,7 @@ Existing libraries are way to complex for me. I only need the most basic ones: q
 
 If, for example, you want to change the database later, the only thing you need to do is just requiring a different library and put its options. Everything else should be the same.
 
-Example:
+Example (development):
 
 ```javascript
 var Dab = require('@rappopo/dab-ne'),
