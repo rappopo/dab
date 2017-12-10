@@ -31,7 +31,7 @@ var Dab = require('@rappopo/dab-ne'),
 dab.find().then(function (results) => { ... })
 ```
 
-And later in production, you just do like this:
+And later in production, just change to this:
 
 ```javascript
 var Dab = require('@rappopo/dab-couch'),
