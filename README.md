@@ -37,7 +37,7 @@ And later in production, just change to this:
 var Dab = require('@rappopo/dab-couch'),
   dab = new Dab({ url: 'http://localhost:5984', dbName: 'mydb' })
 
-// everything below this line should still the same
+// everything below this line should still be the same
 dab.find().then(function (results) => { ... })
 ```
 
