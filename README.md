@@ -1,6 +1,6 @@
 # @rappopo/dab
 
-**WARNING**: all of these are for dummies only!!! If you're considered yourself as a kungfu master, than you'd probably better take a look for masterpieces like [Waterline](https://github.com/balderdashy/waterline) or [Sequelize](https://github.com/sequelize/sequelize) instead!!!
+**WARNING**: all of these are for dummies only!!! If you're considered yourself as a kungfu master, than you'd probably better to look for masterpieces like [Waterline](https://github.com/balderdashy/waterline) or [Sequelize](https://github.com/sequelize/sequelize) instead!!!
 
 But if you're a dummy like me, then welcome to the party! Yay!! Finally a database access for fools!!! With lots of stuff and magic!!!!
 
