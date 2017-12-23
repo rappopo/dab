@@ -1,6 +1,6 @@
 {
   "name": "@rappopo/dab",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "For dummies! Collection of the most useless data access layers! Ever!",
   "main": "index.js",
   "scripts": {
