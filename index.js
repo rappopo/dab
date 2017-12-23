@@ -49,25 +49,20 @@ class Dab {
     let isArray = _.isArray(data),
       result = isArray ? _.cloneDeep(data) : [_.cloneDeep(data)]
     _.each(result, (r, i) => {
-      result[i] = this._defConverter(r)
+      let rec = this._defConverter(r)
       if (typeof params.converter === 'function')
-        result[i] = params.converter(result[i])
-    })
-    return isArray ? result : result[0]
-  }
-
-  dump (data) {
-    if (_.isEmpty(this.schema) || _.isEmpty(this.schema.fields)) return data
-    let isArray = _.isArray(data),
-      result = []
-    _.each(isArray ? data : [data], (d, i) => {
-      let rec = {}
+        rec = params.converter(rec)
+      if (_.isEmpty(this.schema) || _.isEmpty(this.schema.fields)) {
+        result[i] = rec
+        return
+      }
+      let newRec = {}
       _.each(this.schema.order, o => {
         let field = _.find(this.schema.fields, { key: o })
         if (field && !field.hidden) 
-          rec[this.schema.mask[o] || o] = d[o] || null
+          newRec[this.schema.mask[o] || o] = rec[o] || null
       })
-      result.push(rec)
+      result[i] = newRec
     })
     return isArray ? result : result[0]
   }
