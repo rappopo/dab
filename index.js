@@ -9,12 +9,11 @@ require('promise.ascallback').patch()
 class Dab {
   constructor (options, schema) {
     options = options || {}
-    schema = schema || {}
+    this.schema = null
     this.client = null
     this._ = _
-    this.uuid = uuid,
+    this.uuid = uuid
     this.options = {}
-    this.schema = {}
     this.setOptions(options)
     this.setSchema(schema)
   }
@@ -28,6 +27,11 @@ class Dab {
     options.limit = options.limit || 25
     options.options = options.options || {}
     this.options = this._.merge(this.options, options)
+    return this
+  }
+
+  setSchema (schema) {
+    if (schema) this.schema = schema
     return this
   }
 
@@ -52,17 +56,9 @@ class Dab {
       let rec = this._defConverter(r)
       if (typeof params.converter === 'function')
         rec = params.converter(rec)
-      if (_.isEmpty(this.schema) || _.isEmpty(this.schema.fields)) {
-        result[i] = rec
-        return
-      }
-      let newRec = {}
-      _.each(this.schema.order, o => {
-        let field = _.find(this.schema.fields, { key: o })
-        if (field && !field.hidden) 
-          newRec[this.schema.mask[o] || o] = rec[o] || null
-      })
-      result[i] = newRec
+      if (this.schema) 
+        rec = this.schema.convertDoc(rec, params)
+      result[i] = rec
     })
     return isArray ? result : result[0]
   }
@@ -71,17 +67,19 @@ class Dab {
     params = params || {}
     body = body || {}
     let newBody = _.cloneDeep(body)
-//    params = typeof params === 'string' ? { dbName: params } : (params || {})
-    if (this.schema && !_.isEmpty(this.schema.mask)) {
-      let keys = _.keys(this.schema.fields)
-      _.each(keys, k => {
-        if (this.schema.mask[k] && _.has(newBody, this.schema.mask[k])) {
-          newBody[k] = newBody[this.schema.mask[k]]
-          delete newBody[this.schema.mask[k]]
-        }
+    if (typeof params === 'string') {
+      _.each(['dbName', 'collection', 'index', 'table'], type => {
+        if (_.has(this.options, type)) {
+          let p = {}
+          p[type] = params
+          params = p
+        } 
       })
+      if (!_.isPlainObject(params)) params = {}
     }
-    return [params, body]
+    if (this.schema)
+      newBody = this.schema.sanitizeDoc(newBody, params)
+    return [params, newBody]
   }
 
   /**
@@ -298,87 +296,6 @@ class Dab {
     return this.bulkRemove(body, params)
   }
   
-  /**
-  * Schema
-  */
-
-  getSchema () {
-    return this.schema
-  }
-
-  setSchema (source) {
-    source = source || {}
-    if (_.isEmpty(source)) {
-      this.schema = {}
-      return this
-    }
-    const supported = ['string', 'integer', 'float', 'boolean', 'date', 'datetime', 'text']
-    let schema = {
-      fields: []
-    }
-    if (_.isArray(source)) {
-      source = {
-        fields: source
-      }
-    }
-    _.each(source.fields, f => {
-      if (typeof f !== 'object') return
-      if (_.isEmpty(f.key)) return
-      if (f.subtype !== 'custom' && supported.indexOf(f.type) === -1) return
-      if (f.subtype === 'custom')
-        delete f.subtype
-      let field = {
-        key: f.key,
-        type: f.type,
-        nullable: f.nullable ? true : false,
-        required: f.required ? true : false,
-        hidden: f.hidden ? true : false
-      }
-      switch(f.type) {
-        case 'string': 
-          field.length = parseInt(f.length) || 255
-          if (typeof f.default === 'string')
-            field.default = f.default
-          break
-        case 'text': 
-          if (typeof f.default === 'string')
-            field.default = f.default
-          break
-        case 'integer':
-          if (typeof f.default === 'number')
-            field.default = Math.round(f.default)
-          break
-        case 'float':
-          if (typeof f.default === 'number')
-            field.default = f.default
-          break
-        case 'boolean':
-          if (typeof f.default === 'boolean')
-            field.default = f.default
-          break
-        case 'date': 
-        case 'datetime': 
-          if (typeof f.default === 'string' && !_.isEmpty(f.default))
-            field.default = f.default
-          break
-      }
-      schema.fields.push(field)
-    })
-    const keys = _.map(schema.fields, 'key')
-    schema.order = source.order || keys
-    _.each(schema.order, (k, i) => {
-      if (keys.indexOf(k) === -1)
-        _.pullAt(schema.order, i)
-    })
-    schema.mask = source.mask || {}
-    _.forOwn(schema.mask, (v, k) => {
-      if (keys.indexOf(k) === -1)
-        delete schema.mask[k]
-    })
-    this.schema = schema
-    return this
-  }
-
 }
 
 module.exports = Dab

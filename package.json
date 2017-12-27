@@ -1,6 +1,6 @@
 {
   "name": "@rappopo/dab",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "description": "For dummies! Collection of the most useless data access layers! Ever!",
   "main": "index.js",
   "scripts": {
@@ -24,6 +24,7 @@
     "uuid": "^3.1.0"
   },
   "devDependencies": {
+    "@rappopo/bdez": "0.0.1",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "chai-subset": "^1.6.0"
