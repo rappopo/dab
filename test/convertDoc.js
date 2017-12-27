@@ -4,7 +4,6 @@ const chai = require('chai'),
   chaiAsPromised = require('chai-as-promised'),
   chaiSubset = require('chai-subset'),
   expect = chai.expect,
-  BDez = require('@rappopo/bdez'),
   _ = require('lodash')
 
 chai.use(chaiSubset)
@@ -45,14 +44,13 @@ describe('convertDoc', function () {
   })
 
   it('should return values with stripped fields if field doesn\'t exists', function () {
-    const schema = new BDez({
+    const cls = new Cls(null, {
         fields: [
           { key: '_id', type: 'string' },
           { key: 'name', type: 'text' },
           { key: 'age', type: 'integer' },
         ]
-      }),
-      cls = new Cls(null, schema)
+      })
 
     let result = cls.convertDoc(body[0])
     
@@ -63,15 +61,14 @@ describe('convertDoc', function () {
   })
 
   it('should return values with custom order', function () {
-    const schema = new BDez({
+    const cls = new Cls(null, {
         order: ['age', '_id', 'name'],
         fields: [
           { key: '_id', type: 'string' },
           { key: 'name', type: 'text' },
           { key: 'age', type: 'integer' },
         ]
-      }), 
-      cls = new Cls(null, schema)
+      })
 
     let result = cls.convertDoc(body[0]),
       keys = _.keys(result)
@@ -83,15 +80,13 @@ describe('convertDoc', function () {
   })
 
   it('should return values with custom mask', function () {
-    const schema = new BDez({
-        mask: { _id: 'ident', name: 'nama', age: 'usia', code: 'kode' },
+    const cls = new Cls(null, {
         fields: [
-          { key: '_id', type: 'string' },
-          { key: 'name', type: 'text' },
-          { key: 'age', type: 'integer' },
+          { key: '_id', type: 'string', mask: 'ident' },
+          { key: 'name', type: 'text', mask: 'nama' },
+          { key: 'age', type: 'integer', mask: 'usia' },
         ]
-      }), 
-    cls = new Cls(null, schema)
+      })
     
     let result = cls.convertDoc(body[0])
 
@@ -99,15 +94,14 @@ describe('convertDoc', function () {
   })
 
   it('should return values with stripped fields if field is hidden', function () {
-    const schema = new BDez({
+    const cls = new Cls(null, {
         fields: [
           { key: '_id', type: 'string' },
           { key: 'name', type: 'text', hidden: true },
           { key: 'age', type: 'integer', hidden: true },
           { key: 'code', type: 'string' },
         ]
-      }), 
-    cls = new Cls(null, schema)
+      })
     
     let result = cls.convertDoc(body[0])
 

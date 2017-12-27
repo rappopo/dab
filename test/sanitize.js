@@ -3,7 +3,6 @@
 const chai = require('chai'),
   chaiAsPromised = require('chai-as-promised'),
   chaiSubset = require('chai-subset'),
-  BDez = require('@rappopo/bdez'),
   expect = chai.expect
 
 chai.use(chaiSubset)
@@ -17,7 +16,7 @@ const Cls = require('../index'),
     kboolean: false,
     kany: 'John Doe'
   },
-  schemaOptions = {
+  schema = {
     fields: [
       { key: '_id', type: 'string' },
       { key: 'age', type: 'integer' },
@@ -26,9 +25,14 @@ const Cls = require('../index'),
       { key: 'name', type: 'string' },
     ]
   },
-  maskedSchemaOptions = {
-    mask: { _id: 'kstring', age: 'kint', weight: 'kfloat', female: 'kboolean', name: 'kany' },
-    fields: schemaOptions.fields
+  maskedSchema = {
+    fields: [
+      { key: '_id', type: 'string', mask: 'kstring' },
+      { key: 'age', type: 'integer', mask: 'kint' },
+      { key: 'weight', type: 'float', mask: 'kfloat' },
+      { key: 'female', type: 'boolean', mask: 'kboolean' },
+      { key: 'name', type: 'string', mask: 'kany' },
+    ]
   }
 
 describe('sanitize', function () {
@@ -51,7 +55,7 @@ describe('sanitize', function () {
   })
 
   it('should return the sanitized body if schema fields are applied', function () {
-    const cls = new Cls(null, new BDez({
+    const cls = new Cls(null, {
       fields: [
         { key: 'kstring', type: 'string' },
         { key: 'kint', type: 'integer' },
@@ -59,7 +63,7 @@ describe('sanitize', function () {
         { key: 'kboolean', type: 'boolean' },
         { key: 'kany', type: 'string' },
       ]
-    }))
+    })
     let [params, body] = cls.sanitize(null, {
       kstring: 123456,
       kint: 123456,
@@ -76,7 +80,7 @@ describe('sanitize', function () {
   })
 
   it('should return current body if mask is empty', function () {
-    const cls = new Cls(null, new BDez(schemaOptions))
+    const cls = new Cls(null, schema)
     let [params, body] = cls.sanitize(null, input)
     expect(body).to.have.property('kstring', 'test')
     expect(body).to.have.property('kint', 123456)
@@ -85,8 +89,8 @@ describe('sanitize', function () {
     expect(body).to.have.property('kany', 'John Doe')
   })
 
-  it('should return the correct body if fields and mask are applied', function () {
-    const cls = new Cls(null, new BDez(maskedSchemaOptions))
+  it('should return the correct body if mask are applied', function () {
+    const cls = new Cls(null, maskedSchema)
     let [params, body] = cls.sanitize(null, input)
     expect(body).to.have.property('_id', 'test')
     expect(body).to.have.property('age', 123456)

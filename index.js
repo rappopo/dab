@@ -4,12 +4,18 @@ const _ = require('lodash'),
   fs = require('fs'),
   uuid = require('uuid/v4')
 
+const boolTrue = ['true', 'yes', '1'],
+  boolFalse = ['false', 'no', '0']
+
 require('promise.ascallback').patch()
 
 class Dab {
   constructor (options, schema) {
     options = options || {}
-    this.schema = null
+    this.schema = {
+      order: [],
+      fields: []
+    }
     this.client = null
     this._ = _
     this.uuid = uuid
@@ -31,8 +37,72 @@ class Dab {
   }
 
   setSchema (schema) {
-    if (schema) this.schema = schema
+    if (!schema)
+      return this
+    this.schema = {
+      order: [],
+      fields: []      
+    }
+    const supported = ['string', 'integer', 'float', 'boolean', 'date', 'datetime', 'text']
+    if (_.isArray(schema))
+      this.schema.fields = schema
+    else
+      _.each(schema.fields, f => {
+        if (typeof f !== 'object') return
+        if (_.isEmpty(f.key)) return
+        if (f.subtype !== 'custom' && supported.indexOf(f.type) === -1) return
+        if (f.subtype === 'custom')
+          delete f.subtype
+        let field = {
+          key: f.key,
+          type: f.type,
+          nullable: f.nullable ? true : false,
+          required: f.required ? true : false,
+          hidden: f.hidden ? true : false
+        }
+        if (typeof f.mask === 'string' && !_.isEmpty(f.mask))
+          field.mask = f.mask
+        switch(f.type) {
+          case 'string': 
+            field.length = parseInt(f.length) || 255
+            if (typeof f.default === 'string')
+              field.default = f.default
+            break
+          case 'text': 
+            if (typeof f.default === 'string')
+              field.default = f.default
+            break
+          case 'integer':
+            if (typeof f.default === 'number')
+              field.default = Math.round(f.default)
+            break
+          case 'float':
+            if (typeof f.default === 'number')
+              field.default = f.default
+            break
+          case 'boolean':
+            if (typeof f.default === 'boolean')
+              field.default = f.default
+            break
+          case 'date': 
+          case 'datetime': 
+            if (typeof f.default === 'string' && !_.isEmpty(f.default))
+              field.default = f.default
+            break
+        }
+        this.schema.fields.push(field)
+      })
+    const keys = _.map(this.schema.fields, 'key')
+    this.schema.order = schema.order || keys
+    _.each(this.schema.order, (k, i) => {
+      if (keys.indexOf(k) === -1)
+        _.pullAt(this.schema.order, i)
+    })
     return this
+  }
+
+  getSchema () {
+    return this.schema
   }
 
   setClient (options) {
@@ -56,9 +126,15 @@ class Dab {
       let rec = this._defConverter(r)
       if (typeof params.converter === 'function')
         rec = params.converter(rec)
-      if (this.schema) 
-        rec = this.schema.convertDoc(rec, params)
-      result[i] = rec
+      if (this.schema.fields.length === 0) 
+        return
+      let newRec = {}
+      _.each(this.schema.order, o => {
+        let field = _.find(this.schema.fields, { key: o })
+        if (field && !field.hidden) 
+          newRec[field.mask || o] = rec[o] || null
+      })
+      result[i] = newRec
     })
     return isArray ? result : result[0]
   }
@@ -77,8 +153,44 @@ class Dab {
       })
       if (!_.isPlainObject(params)) params = {}
     }
-    if (this.schema)
-      newBody = this.schema.sanitizeDoc(newBody, params)
+    // reverted to its mask
+    _.each(this.schema.fields, (f, i) => {
+      if (f.mask && _.has(newBody, f.mask)) {
+        newBody[f.key] = newBody[f.mask]
+        delete newBody[f.mask]
+      }
+    })
+    // sanitized
+    if (!params.skipBody) {
+      _.each(this.schema.fields, f => {
+        if (!_.has(newBody, f.key)) return
+        let val
+        switch(f.type) {
+          case 'text':
+          case 'string':
+            newBody[f.key] = '' + newBody[f.key]
+            break
+          case 'integer':
+            val = parseInt(newBody[f.key])
+            newBody[f.key] = _.isNaN(val) ? null : val
+            break
+          case 'float':
+            val = parseFloat(newBody[f.key])
+            newBody[f.key] = _.isNaN(val) ? null : val
+            break
+          case 'boolean':
+            if (typeof newBody[f.key] !== 'boolean') {
+              val = '' + newBody[f.key]
+              let bools = _.concat(boolTrue, boolFalse)
+              if (bools.indexOf(newBody[f.key]) === -1)
+                newBody[f.key] = null
+              else
+                newBody[f.key] = boolTrue.indexOf(newBody[f.key]) > -1
+            }
+            break
+        }
+      })
+    }
     return [params, newBody]
   }
 
