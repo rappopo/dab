@@ -31,6 +31,7 @@ class Dab {
   setOptions (options) {
     options = options || {}
     options.limit = options.limit || 25
+    options.ns = options.ns || 'default'
     options.options = options.options || {}
     this.options = this._.merge(this.options, options)
     return this

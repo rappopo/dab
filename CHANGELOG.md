@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.12
+
+* Introduce namespace (ns) options
+
 ## 0.0.11
 
 * Making schema as built-in feature because @rappopo/bdez will be refactored as a fullblown ORM/ODM  
