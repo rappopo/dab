@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0
+
+* Change the term namespace to collection
+* Remove collection auto detection because of its unreliability
+* Fix problem on copyFrom/copyTo if collection is different from the default one
+* Introduce collection management: createCollection(), renameCollection(), removeCollection()
+
 ## 0.0.12
 
 * Introduce namespace (ns) options

@@ -1,6 +1,8 @@
 # @rappopo/dab
 
-A dead easy Database Access Layers for dummies like me! Kungfu masters, please stay away from this library or else it'll hurts you!
+A dead easy Database Access Layers for dummies like me! 
+
+Kungfu masters, please stay away from this library or else it'll hurts you!
 
 [Documentation](https://docs.rappopo.com/dab/)
 

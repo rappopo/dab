@@ -8,9 +8,9 @@ const chai = require('chai'),
 chai.use(chaiSubset)
 chai.use(chaiAsPromised)
 
-const Cls = require('../index')
+const Cls = require('../dab')
 
-describe('_notImplemented', function () {
+describe('Dab - _notImplemented', function () {
   it('should yield error as promise', function () {
     const cls = new Cls()
     return expect(cls._notImplemented()).to.eventually.rejectedWith('Not implemented')
