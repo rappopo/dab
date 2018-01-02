@@ -29,7 +29,6 @@ class DabCollection {
       let field = {
         id: f.id,
         type: f.type,
-        nullable: f.nullable ? true : false,
         required: f.required ? true : false,
         hidden: f.hidden ? true : false
       }

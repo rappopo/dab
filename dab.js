@@ -143,7 +143,7 @@ class Dab {
 
     function loop(pageNumber, callback) {
       src.find({
-        collection: params.collectionSrc || params.collection,
+        collection: params.srcCollection || params.collection,
         query: params.query,
         limit: params.limit,
         page: pageNumber
@@ -153,7 +153,7 @@ class Dab {
         if (result.data.length === 0)
           return callback()
         dest.bulkCreate(result.data, { 
-          collection: params.collectionDest || params.collection, 
+          collection: params.destCollection || params.collection, 
           withDetail: params.withDetail 
         }).asCallback((err, result) => {
           if (err)
@@ -303,11 +303,24 @@ class Dab {
     return this.bulkRemove(body, params)
   }
 
+  addCollection (name, params) {
+    return this.createCollection(name, params)
+  }
+
+  deleteCollection (name, params) {
+    return this.removeCollection(name, params)
+  }
+
+  destroyCollection (name, params) {
+    return this.removeCollection(name, params)
+  }
+
   /**
   * Collection
   */
 
-  createCollection (coll) {
+  createCollection (coll, params) {
+    params = params || {}
     return new Promise((resolve, reject) => {
       if (typeof coll === 'object')
         coll = new DabCollection(coll)
@@ -320,7 +333,8 @@ class Dab {
     })
   }
   
-  renameCollection (oldName, newName) {
+  renameCollection (oldName, newName, params) {
+    params = params || {}
     return new Promise((resolve, reject) => {
       if (this._.isEmpty(oldName) || this._.isEmpty(newName))
         return reject(new Error('Require old & new collection names'))
@@ -335,7 +349,8 @@ class Dab {
     })
   }
   
-  removeCollection (name) {
+  removeCollection (name, params) {
+    params = params || {}
     return new Promise((resolve, reject) => {
       if (this._.isEmpty(name))
         return reject(new Error('Requires collection name'))

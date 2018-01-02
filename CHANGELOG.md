@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+* Making aliases for createCollection() & removeCollection()
+* Remove nullable in collection in favor of required
+* Change collectionSrc & collectionDest in copyFrom/To to srcCollection & destCollection respectively
+
 ## 0.1.0
 
 * Change the term namespace to collection
