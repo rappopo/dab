@@ -1,9 +1,8 @@
 'use strict'
 
-const _ = require('lodash')
-
-const boolTrue = ['true', 'yes', '1'],
-  boolFalse = ['false', 'no', '0']
+const _ = require('lodash'),
+  validation = require('./validation'),
+  sanitization = require('./sanitization')
 
 class DabCollection {
   constructor (options) {
@@ -29,8 +28,9 @@ class DabCollection {
       let field = {
         id: f.id,
         type: f.type,
-        required: f.required ? true : false,
-        hidden: f.hidden ? true : false
+        hidden: f.hidden ? true : false,
+        sanitizer: f.sanitizer || {},
+        validator: f.validator || {}
       }
       if (typeof f.mask === 'string' && !_.isEmpty(f.mask))
         field.mask = f.mask
@@ -45,19 +45,42 @@ class DabCollection {
             field.default = f.default
           break
         case 'integer':
+          if (!_.has(field.validator, 'isInteger'))
+            field.validator.isInteger = true
+          if (!_.has(field.sanitizer, 'toInteger'))
+            field.sanitizer.toInteger = true
           if (typeof f.default === 'number')
             field.default = Math.round(f.default)
           break
         case 'float':
+          if (!_.has(field.validator, 'isFloat'))
+            field.validator.isFloat = true
+          if (!_.has(field.sanitizer, 'toFloat'))
+            field.sanitizer.toFloat = true
           if (typeof f.default === 'number')
             field.default = f.default
           break
         case 'boolean':
+          if (!_.has(field.validator, 'isBoolean'))
+            field.validator.isBoolean = true
+          if (!_.has(field.sanitizer, 'toBoolean'))
+            field.sanitizer.toBoolean = true
           if (typeof f.default === 'boolean')
             field.default = f.default
           break
         case 'date': 
+          if (!_.has(field.validator, 'isDate'))
+            field.validator.isDate = true
+          if (!_.has(field.sanitizer, 'toDate'))
+            field.sanitizer.toDate = true
+          if (typeof f.default === 'string' && !_.isEmpty(f.default))
+            field.default = f.default
+          break
         case 'datetime': 
+          if (!_.has(field.validator, 'isDatetime'))
+            field.validator.isDatetime = true
+          if (!_.has(field.sanitizer, 'toDatetime'))
+            field.sanitizer.toDatetime = true
           if (typeof f.default === 'string' && !_.isEmpty(f.default))
             field.default = f.default
           break
@@ -95,39 +118,20 @@ class DabCollection {
         delete newDoc[f.mask]
       }
     })
-    if (!skipped) {
-      _.each(this.fields, f => {
-        if (!_.has(newDoc, f.id)) return
-        let val
-        switch(f.type) {
-          case 'text':
-          case 'string':
-            newDoc[f.id] = '' + newDoc[f.id]
-            break
-          case 'integer':
-            val = parseInt(newDoc[f.id])
-            newDoc[f.id] = _.isNaN(val) ? null : val
-            break
-          case 'float':
-            val = parseFloat(newDoc[f.id])
-            newDoc[f.id] = _.isNaN(val) ? null : val
-            break
-          case 'boolean':
-            if (typeof newDoc[f.id] !== 'boolean') {
-              val = '' + newDoc[f.id]
-              let bools = _.concat(boolTrue, boolFalse)
-              if (bools.indexOf(newDoc[f.id]) === -1)
-                newDoc[f.id] = null
-              else
-                newDoc[f.id] = boolTrue.indexOf(newDoc[f.id]) > -1
-            }
-            break
-        }
-      })
-    }
+    if (!skipped)
+      newDoc = sanitization.sanitize(newDoc, this.fields)
     return newDoc
   }
 
+  validateDoc (doc) {
+    let result = validation.validate(doc, this.fields)
+    if (!_.isEmpty(result)) {
+      let err = new Error('Validation error')
+      err.details = result
+      return err
+    }
+    return null
+  }
 
 }
 

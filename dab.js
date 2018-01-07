@@ -78,6 +78,14 @@ class Dab {
     return [params, newBody]
   }
 
+  validateDoc (body, params) {
+    body = body || {}
+    params = params || {}
+    if (params.collection && this.collection[params.collection] && this.collection[params.collection].fields)
+      return this.collection[params.collection].validateDoc(body)
+    return null
+  }
+
   /**
   * Private
   */

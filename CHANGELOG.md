@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0
+
+* Adding data validation through validateDoc()
+* Rewrite data sanitization
+
 ## 0.1.1
 
 * Making aliases for createCollection() & removeCollection()
