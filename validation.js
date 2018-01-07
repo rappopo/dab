@@ -32,7 +32,8 @@ validator.isDatetime = function (value, format) {
 const supported = _.keys(validator)
 
 function checkField (field, value) {
-  value = value + ''
+  if (!(value === undefined || value === null))
+    value = value + ''
   let err = []
   _.forOwn(_.cloneDeep(field.validator), (v, k) => {
     let result = true
@@ -55,9 +56,9 @@ function checkField (field, value) {
 function validate (body, fields) {
   let err = {}
   _.each(fields, f => {
-    if (!_.has(body, f.id))
-      return
-    let result = checkField(f, body[f.id])
+    let result
+    if (f.validator.required || _.has(body, f.id))
+      result = checkField(f, body[f.id])
     if (!_.isEmpty(result))
       err[f.id] = result
   })

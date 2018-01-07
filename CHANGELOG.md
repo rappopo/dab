@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+* Fix required() validator
+
 ## 0.2.0
 
 * Adding data validation through validateDoc()
