@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0
+
+* Adding attribId to collection. This is to let DAB know which column is the doc ID
+* Fix a few small bugs inside collection
+
 ## 0.2.3
 
 * Fix validateDoc() if column is null or undefined

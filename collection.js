@@ -8,6 +8,7 @@ class DabCollection {
   constructor (options) {
     options = options || {}
     this.name = null
+    this.attribId = null
     this.attribName = null
     this.order = []
     this.fields = []
@@ -19,6 +20,7 @@ class DabCollection {
     if (_.isEmpty(options.name))
       throw new Error('Requires a name')
     this.name = options.name
+    this.attribId = options.attribId || '_id'
     this.attribName = options.attribName || 'collection'
     const supported = ['string', 'integer', 'float', 'boolean', 'date', 'datetime', 'text']
     _.each(options.fields, f => {
