@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+* Adding ignored columns in validateDoc()
+
 ## 0.2.1
 
 * Fix required() validator

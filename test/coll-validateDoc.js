@@ -73,6 +73,27 @@ describe('Collection - validateDoc', function () {
     
   })
 
+  it('should skip columns that explicitly tagged as ignored', function () {
+    const cls = new Cls({
+      name: 'test',
+      fields: [
+        { id: 'key1', type: 'string', validator: { contains: '123' }},
+        { id: 'key2', type: 'string', validator: { isEmail: true }},
+        { id: 'key3', type: 'string', validator: { contains: '123', isEmail: true }},
+        { id: 'key4', type: 'float' }
+      ]
+    })
+
+    let result = cls.validateDoc({
+      key1: 'abcdefghij',
+      key2: 'test@domain.com',
+      key3: 'test123test@domain.com',
+      key4: 123.456
+    }, ['key1'])
+    expect(result).to.be.a('null')
+    
+  })
+
   /*
 
 

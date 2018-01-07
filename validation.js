@@ -53,9 +53,11 @@ function checkField (field, value) {
   return err
 }
 
-function validate (body, fields) {
+function validate (body, fields, ignored = []) {
   let err = {}
   _.each(fields, f => {
+    if (ignored.indexOf(f.id) > -1)
+      return
     let result
     if (f.validator.required || _.has(body, f.id))
       result = checkField(f, body[f.id])

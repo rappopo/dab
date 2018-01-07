@@ -123,8 +123,8 @@ class DabCollection {
     return newDoc
   }
 
-  validateDoc (doc) {
-    let result = validation.validate(doc, this.fields)
+  validateDoc (doc, ignored = []) {
+    let result = validation.validate(doc, this.fields, ignored)
     if (!_.isEmpty(result)) {
       let err = new Error('Validation error')
       err.details = result
