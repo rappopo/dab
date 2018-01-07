@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3
+
+* Fix validateDoc() if column is null or undefined
+
 ## 0.2.2
 
 * Adding ignored columns in validateDoc()

@@ -82,7 +82,7 @@ class Dab {
     body = body || {}
     params = params || {}
     if (params.collection && this.collection[params.collection] && this.collection[params.collection].fields)
-      return this.collection[params.collection].validateDoc(body)
+      return this.collection[params.collection].validateDoc(body, params.ignoreColumn || [])
     return null
   }
 
