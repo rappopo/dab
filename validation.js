@@ -56,14 +56,14 @@ function checkField (field, value) {
 
 function validate (body, fields, ignored = []) {
   let err = {}
-  _.each(fields, f => {
-    if (ignored.indexOf(f.id) > -1)
+  _.forOwn(fields, (f, id) => {
+    if (ignored.indexOf(id) > -1)
       return
     let result
-    if (f.validator.required || _.has(body, f.id))
-      result = checkField(f, body[f.id])
+    if (f.validator.required || _.has(body, id))
+      result = checkField(f, body[id])
     if (!_.isEmpty(result))
-      err[f.id] = result
+      err[id] = result
   })
   return _.isEmpty(err) ? null : err
 }

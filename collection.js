@@ -8,10 +8,10 @@ class DabCollection {
   constructor (options) {
     options = options || {}
     this.name = null
-    this.attribId = null
-    this.attribName = null
+    this.srcAttribId = null
+    this.srcAttribName = null
     this.order = []
-    this.fields = []
+    this.attributes = {}
     this.setOptions(options)
   }
 
@@ -20,15 +20,16 @@ class DabCollection {
     if (_.isEmpty(options.name))
       throw new Error('Requires a name')
     this.name = options.name
-    this.attribId = options.attribId || '_id'
-    this.attribName = options.attribName || 'collection'
+    this.srcAttribId = options.srcAttribId || '_id'
+    this.srcAttribName = options.srcAttribName || 'collection'
     const supported = ['string', 'integer', 'float', 'boolean', 'date', 'datetime', 'text']
-    _.each(options.fields, f => {
-      if (typeof f !== 'object') return
-      if (_.isEmpty(f.id)) return
+    _.forOwn(options.attributes, (f, id) => {
+      if (typeof f === 'string') 
+        f = { type: f }
+      if (!_.isPlainObject(f))
+        return
       if (supported.indexOf(f.type) === -1) return
       let field = {
-        id: f.id,
         type: f.type,
         hidden: f.hidden ? true : false,
         sanitizer: f.sanitizer || {},
@@ -87,9 +88,9 @@ class DabCollection {
             field.default = f.default
           break
       }
-      this.fields.push(field)
+      this.attributes[id] = field
     })
-    const keys = _.map(this.fields, 'id')
+    const keys = _.keys(this.attributes)
     this.order = options.order || keys
     _.each(this.order, (k, i) => {
       if (keys.indexOf(k) === -1)
@@ -99,10 +100,10 @@ class DabCollection {
   }  
 
   convertDoc (doc) {
-    if (_.isEmpty(this.fields)) return doc
+    if (_.isEmpty(this.attributes)) return doc
     let newDoc = {}
     _.each(this.order, o => {
-      let field = _.find(this.fields, { id: o })
+      let field = this.attributes[o]
       if (field && !field.hidden) 
         newDoc[field.mask || o] = doc[o] || null
     })
@@ -110,23 +111,23 @@ class DabCollection {
   }
 
   sanitizeDoc (doc, skipped = false) {
-    if (_.isEmpty(this.fields)) return doc
+    if (_.isEmpty(this.attributes)) return doc
     doc = doc || {}
     let newDoc = _.cloneDeep(doc)
     // reverted to its mask
-    _.each(this.fields, (f, i) => {
+    _.forOwn(this.attributes, (f, id) => {
       if (f.mask && _.has(newDoc, f.mask)) {
-        newDoc[f.id] = newDoc[f.mask]
+        newDoc[id] = newDoc[f.mask]
         delete newDoc[f.mask]
       }
     })
     if (!skipped)
-      newDoc = sanitization.sanitize(newDoc, this.fields)
+      newDoc = sanitization.sanitize(newDoc, this.attributes)
     return newDoc
   }
 
   validateDoc (doc, ignored = []) {
-    let result = validation.validate(doc, this.fields, ignored)
+    let result = validation.validate(doc, this.attributes, ignored)
     if (!_.isEmpty(result)) {
       let err = new Error('Validation error')
       err.details = result

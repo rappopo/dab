@@ -19,7 +19,7 @@ const Cls = require('../collection'),
 
 describe('Collection - convertDoc', function () {
 
-  it('should return as is if no fields provided', function () {
+  it('should return as is if no attributes provided', function () {
     const cls = new Cls({
       name: 'test'
     })
@@ -33,14 +33,14 @@ describe('Collection - convertDoc', function () {
   })
 
 
-  it('should only return values whose id is in the fields', function () {
+  it('should only return values whose id is in the attributes', function () {
     const cls = new Cls({
       name: 'test',
-      fields: [
-        { id: '_id', type: 'string' },
-        { id: 'name', type: 'text' },
-        { id: 'age', type: 'integer' },
-      ]
+      attributes: {
+        _id: 'string',
+        name: 'string',
+        age: 'integer'
+      }
     })
 
     let result = cls.convertDoc(body)
@@ -55,11 +55,11 @@ describe('Collection - convertDoc', function () {
     const cls = new Cls({
       name: 'test',
       order: ['age', '_id', 'name'],
-      fields: [
-        { id: '_id', type: 'string' },
-        { id: 'name', type: 'text' },
-        { id: 'age', type: 'integer' },
-      ]
+      attributes: {
+        _id: 'string',
+        name: 'string',
+        age: 'integer'
+      }
     })
 
     let result = cls.convertDoc(body),
@@ -74,11 +74,11 @@ describe('Collection - convertDoc', function () {
   it('should return values with custom mask', function () {
     const cls = new Cls({
       name: 'test',
-      fields: [
-        { id: '_id', type: 'string', mask: 'ident' },
-        { id: 'name', type: 'text', mask: 'nama' },
-        { id: 'age', type: 'integer', mask: 'usia' },
-      ]
+      attributes: {
+        _id: { type: 'string', mask: 'ident' },
+        name: { type: 'text', mask: 'nama' },
+        age: { type: 'integer', mask: 'usia' }
+      }
     })
     
     let result = cls.convertDoc(body)
@@ -88,12 +88,12 @@ describe('Collection - convertDoc', function () {
   it('should only return values which aren\'t hidden', function () {
     const cls = new Cls({
       name: 'test',
-      fields: [
-        { id: '_id', type: 'string' },
-        { id: 'name', type: 'text', hidden: true },
-        { id: 'age', type: 'integer', hidden: true },
-        { id: 'code', type: 'string' },
-      ]
+      attributes: {
+        _id: { type: 'string' },
+        name: { type: 'text', hidden: true },
+        age: { type: 'integer', hidden: true },
+        code: { type: 'string' }
+      }
     })
     
     let result = cls.convertDoc(body)

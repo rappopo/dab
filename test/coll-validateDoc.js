@@ -12,12 +12,12 @@ describe('Collection - validateDoc', function () {
   it('should ignore keys that aren\'t supported', function () {
     const cls = new Cls({
       name: 'test',
-      fields: [
-        { id: 'key1', type: 'string', validator: { isIP: true }},
-        { id: 'key2', type: 'string', validator: { isEmail: true }},
-        { id: 'key3', type: 'string' },
-        { id: 'key4', type: 'string', validator: { isTest: true, isTest1: true }}
-      ]
+      attributes: {
+        key1: { type: 'string', validator: { isIP: true }},
+        key2: { type: 'string', validator: { isEmail: true }},
+        key3: { type: 'string' },
+        key4: { type: 'string', validator: { isTest: true, isTest1: true }}
+      }
     })
 
     let result = cls.validateDoc({
@@ -37,12 +37,12 @@ describe('Collection - validateDoc', function () {
   it('should validate common pattern', function () {
     const cls = new Cls({
       name: 'test',
-      fields: [
-        { id: 'key1', type: 'string', validator: { contains: '123' }},
-        { id: 'key2', type: 'string', validator: { isEmail: true }},
-        { id: 'key3', type: 'string', validator: { contains: '123', isEmail: true }},
-        { id: 'key4', type: 'float' }
-      ]
+      attributes: {
+        key1: { type: 'string', validator: { contains: '123' }},
+        key2: { type: 'string', validator: { isEmail: true }},
+        key3: { type: 'string', validator: { contains: '123', isEmail: true }},
+        key4: { type: 'float' }
+      }
     })
 
     let result = cls.validateDoc({
@@ -59,10 +59,10 @@ describe('Collection - validateDoc', function () {
   it('should override default type if validation is provided', function () {
     const cls = new Cls({
       name: 'test',
-      fields: [
-        { id: 'key1', type: 'float' },
-        { id: 'key2', type: 'float', validator: { isFloat: { min: 50, max: 100 } }}
-      ]
+      attributes: {
+        key1: { type: 'float' },
+        key2: { type: 'float', validator: { isFloat: { min: 50, max: 100 } }}
+      }
     })
 
     let result = cls.validateDoc({
@@ -76,12 +76,12 @@ describe('Collection - validateDoc', function () {
   it('should skip columns that explicitly tagged as ignored', function () {
     const cls = new Cls({
       name: 'test',
-      fields: [
-        { id: 'key1', type: 'string', validator: { contains: '123' }},
-        { id: 'key2', type: 'string', validator: { isEmail: true }},
-        { id: 'key3', type: 'string', validator: { required: true, contains: '123', isEmail: true }},
-        { id: 'key4', type: 'float' }
-      ]
+      attributes: {
+        key1: { type: 'string', validator: { contains: '123' }},
+        key2: { type: 'string', validator: { isEmail: true }},
+        key3: { type: 'string', validator: { required: true, contains: '123', isEmail: true }},
+        key4: { type: 'float' }
+      }
     })
 
     let result = cls.validateDoc({
@@ -92,32 +92,4 @@ describe('Collection - validateDoc', function () {
     expect(result).to.be.a('null')
     
   })
-
-  /*
-
-
-  it('should return as is if no fields provided', function () {
-    const cls = new Cls({
-      name: 'test',
-      fields: [
-        { id: 'ip', type: 'string', isIP: true },
-        { id: 'email', type: 'string', isEmail: true },
-        { id: 'none', type: 'string' },
-        { id: 'ip_email', type: 'string', isIP: true, isEmail: true }
-      ]
-    })
-
-    let result = cls.validateDoc({
-      ip: '123456789',
-      email: 'test@domain.com',
-      none: null,
-      ip_email: '123.123.123.123'
-    })
-
-    expect(result).to.be.a('error').and.have.property('message', 'Validation error')
-    expect(result.details).to.have.property('ip').that.eql(['isIP'])
-    
-  })
-
-  */
 })

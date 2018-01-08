@@ -51,9 +51,8 @@ class Dab {
       let doc = this._defConverter(r)
       if (typeof params.converter === 'function')
         doc = params.converter(doc)
-      if (this.collection[params.collection] && this.collection[params.collection].fields 
-        && this.collection[params.collection].fields.length > 0) 
-          doc = this.collection[params.collection].convertDoc(doc) 
+      if (this.collection[params.collection] && !_.isEmpty(this.collection[params.collection].attributes))
+        doc = this.collection[params.collection].convertDoc(doc) 
       result[i] = doc
     })
     return isArray ? result : result[0]
@@ -69,7 +68,7 @@ class Dab {
     let isArray = _.isArray(body),
       result = isArray ? _.cloneDeep(body) : [_.cloneDeep(body)]
     _.each(result, (r, i) => {
-      if (this.collection[params.collection] && this.collection[params.collection].fields)
+      if (this.collection[params.collection]  && !_.isEmpty(this.collection[params.collection].attributes))
         result[i] = this.collection[params.collection].sanitizeDoc(r, params.skipBody)
     })
 
@@ -81,7 +80,7 @@ class Dab {
   validateDoc (body, params) {
     body = body || {}
     params = params || {}
-    if (params.collection && this.collection[params.collection] && this.collection[params.collection].fields)
+    if (params.collection && this.collection[params.collection]  && !_.isEmpty(this.collection[params.collection].attributes))
       return this.collection[params.collection].validateDoc(body, params.ignoreColumn || [])
     return null
   }

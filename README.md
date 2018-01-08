@@ -20,6 +20,7 @@ Kungfu masters, please stay away from this library or else it'll hurts you!
 
 ## Misc
 
+* [Rappopo BDez - A ORM/ODM wannabe for DAB](https://github.com/rappopo/bdez)
 * Donation: Bitcoin **16HVCkdaNMvw3YdBYGHbtt3K5bmpRmH74Y**
 
 ## License

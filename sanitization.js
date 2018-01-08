@@ -52,12 +52,12 @@ function checkField (field, value) {
 }
 
 function sanitize (body, fields) {
-  _.each(fields, f => {
-    if (body[f.id] === null || (!_.has(body, f.id)))
+  _.forOwn(fields, (f, id) => {
+    if (body[id] === null || (!_.has(body, id)))
       return
-    let result = checkField(f, body[f.id])
+    let result = checkField(f, body[id])
     if (result !== undefined)
-      body[f.id] = result
+      body[id] = result
   })
   return body
 }

@@ -44,14 +44,14 @@ describe('Dab - convert', function () {
     expect(result).to.eql(body)
   })
 
-  it('should return values whose id is in the collection fields', function (done) {
+  it('should return values whose id is in the collection attributes', function (done) {
     const collection = new Collection({
       name: 'test',
-      fields: [
-        { id: '_id', type: 'string' },
-        { id: 'name', type: 'text' },
-        { id: 'age', type: 'integer' },
-      ]
+      attributes: {
+        _id: 'string',
+        name: 'text',
+        age: 'integer',
+      }
     })
 
     const cls = new Cls()

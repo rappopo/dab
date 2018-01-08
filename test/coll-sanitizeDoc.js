@@ -13,7 +13,7 @@ const Cls = require('../collection')
 
 describe('Collection - sanitizeDoc', function () {
 
-  it('should return as is if no fields provided', function () {
+  it('should return as is if no attributes provided', function () {
     const cls = new Cls({
       name: 'test'
     })
@@ -31,16 +31,16 @@ describe('Collection - sanitizeDoc', function () {
     expect(result).to.have.property('code', '007')
   })
 
-  it('should return the sanitized result if fields are applied', function () {
+  it('should return the sanitized result if attributes are applied', function () {
     const cls = new Cls({
       name: 'test',
-      fields: [
-        { id: 'kstring', type: 'string' },
-        { id: 'kint', type: 'integer' },
-        { id: 'kfloat', type: 'float' },
-        { id: 'kboolean', type: 'boolean' },
-        { id: 'kany', type: 'string' },
-      ]
+      attributes: {
+        kstring: 'string',
+        kint: 'integer',
+        kfloat: 'float',
+        kboolean: 'boolean',
+        kany: 'string',
+      }
     })
     let result = cls.sanitizeDoc({
       kstring: 123456,
@@ -60,13 +60,13 @@ describe('Collection - sanitizeDoc', function () {
   it('should return as is if it skipped', function () {
     const cls = new Cls({
       name: 'test',
-      fields: [
-        { id: 'kstring', type: 'string' },
-        { id: 'kint', type: 'integer' },
-        { id: 'kfloat', type: 'float' },
-        { id: 'kboolean', type: 'boolean' },
-        { id: 'kany', type: 'string' },
-      ]
+      attributes: {
+        kstring: 'string',
+        kint: 'integer',
+        kfloat: 'float',
+        kboolean: 'boolean',
+        kany: 'string',
+      }
     })
     let result = cls.sanitizeDoc({
       kstring: 123456,
@@ -86,13 +86,13 @@ describe('Collection - sanitizeDoc', function () {
   it('should return current result if mask is empty', function () {
     const cls = new Cls({
       name: 'test',
-      fields: [
-        { id: 'kstring', type: 'string' },
-        { id: 'kint', type: 'integer' },
-        { id: 'kfloat', type: 'float' },
-        { id: 'kboolean', type: 'boolean' },
-        { id: 'kany', type: 'string' },
-      ]
+      attributes: {
+        kstring: 'string',
+        kint: 'integer',
+        kfloat: 'float',
+        kboolean: 'boolean',
+        kany: 'string',
+      }
     })
     let result = cls.sanitizeDoc({
       kstring: 'test',
@@ -111,13 +111,13 @@ describe('Collection - sanitizeDoc', function () {
   it('should return the correct result if mask are applied', function () {
     const cls = new Cls({
       name: 'test',
-      fields: [
-        { id: 'kstring', type: 'string', mask: '_id' },
-        { id: 'kint', type: 'integer', mask: 'age' },
-        { id: 'kfloat', type: 'float', mask: 'weight' },
-        { id: 'kboolean', type: 'boolean', mask: 'female' },
-        { id: 'kany', type: 'string', mask: 'name' },
-      ]
+      attributes: {
+        kstring: { type: 'string', mask: '_id' },
+        kint: { type: 'integer', mask: 'age' },
+        kfloat: { type: 'float', mask: 'weight' },
+        kboolean: { type: 'boolean', mask: 'female' },
+        kany: { type: 'string', mask: 'name' }
+      }
     })
     let result = cls.sanitizeDoc({
       _id: 'test',

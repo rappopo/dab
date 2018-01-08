@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4.0
+
+* Collection: change fields to attributes
+* Collection: change attributes to be an object
+* Collection: change attribName to srcAttribName
+* Collection: change attribId to srcAttribId
+* Change everything related above to match the new specs
+
 ## 0.3.0
 
 * Adding attribId to collection. This is to let DAB know which column is the doc ID
