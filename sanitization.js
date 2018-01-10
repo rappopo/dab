@@ -4,6 +4,8 @@ const validator = require('validator'),
   _ = require('lodash'),
   moment = require('moment')
 
+moment.suppressDeprecationWarnings = true
+
 const supportedSanitizer = ['blacklist', 'escape', 'ltrim', 'normalizeEmail', 'rtrim', 'stripLow',
   'trim', 'whitelist']
 
@@ -13,11 +15,17 @@ _.each(supportedSanitizer, v => {
 })
 
 sanitizer.toDatetime = function (value, format) {
-  return moment(value).format(format)
+  let m = _.isEmpty(format) ? moment(value) : moment(value, format)
+  if (!m.isValid)
+    return null
+  return m.toISOString()
 }
 
-sanitizer.toDate = function (value) {
-  return moment(value).format(format)
+sanitizer.toDate = function (value, format) {
+  let m = _.isEmpty(format) ? moment(value) : moment(value, format)
+  if (!m.isValid)
+    return null
+  return m.toISOString().substr(0, 10)
 }
 
 sanitizer.toBoolean = function (value) {
@@ -32,10 +40,41 @@ sanitizer.toInteger = function (value) {
   return validator.toInt(value) || null
 }
 
+sanitizer.toString = function (value) {
+  return value + ''
+}
+
+sanitizer.toObject = function (value) {
+  if (_.isPlainObject(value))
+    return value
+  try {
+    return JSON.parse(value)
+  } catch(e) {
+    return null
+  }
+}
+
+sanitizer.toArray = function (value) {
+  if (_.isArray(value))
+    return value
+  try {
+    return JSON.parse(value)
+  } catch(e) {
+    return null
+  }
+}
+
 const supported = _.keys(sanitizer)
 
 function checkField (field, value) {
-  let err = [], result = value + ''
+  let result = null
+  if (value === undefined || value === null)
+    return null
+  if (['object', 'array'].indexOf(field.type) > -1) {
+    result = typeof value === 'string' ? value : JSON.stringify(value)
+  } else {
+    result = value + ''
+  }
   _.forOwn(_.cloneDeep(field.sanitizer), (v, k) => {
     if (supported.indexOf(k) === -1) 
       return

@@ -52,7 +52,7 @@ class Dab {
       if (typeof params.converter === 'function')
         doc = params.converter(doc)
       if (this.collection[params.collection] && !_.isEmpty(this.collection[params.collection].attributes))
-        doc = this.collection[params.collection].convertDoc(doc) 
+        doc = this.collection[params.collection].convertDoc(doc, params.skipSanitize) 
       result[i] = doc
     })
     return isArray ? result : result[0]

@@ -4,14 +4,25 @@ const _ = require('lodash'),
   validation = require('./validation'),
   sanitization = require('./sanitization')
 
+function setFieldDef(field, type) {
+  let checker = _.upperFirst(type)
+  if (!_.has(field.validator, 'is' + checker))
+    field.validator['is' + checker] = true
+  if (!_.has(field.sanitizer, 'to' + checker))
+    field.sanitizer['to' + checker] = true
+  return field
+}
+
 class DabCollection {
   constructor (options) {
     options = options || {}
     this.name = null
     this.srcAttribId = null
+    this.srcAttribIdType = null
     this.srcAttribName = null
     this.order = []
     this.attributes = {}
+    this.indexes = {}
     this.setOptions(options)
   }
 
@@ -21,8 +32,17 @@ class DabCollection {
       throw new Error('Requires a name')
     this.name = options.name
     this.srcAttribId = options.srcAttribId || '_id'
+    this.srcAttribIdType = options.srcAttribIdType || 'string'
     this.srcAttribName = options.srcAttribName || 'collection'
-    const supported = ['string', 'integer', 'float', 'boolean', 'date', 'datetime', 'text']
+    if (_.isEmpty(options.attributes)) 
+      return this
+    const supported = ['string', 'integer', 'float', 'boolean', 'date', 'datetime', 'text', 'object', 'array']
+    if (!_.has(options.attributes, this.srcAttribId))
+      options.attributes[this.srcAttribId] = {
+        type: this.srcAttribIdType,
+        primaryKey: true
+      }
+    let hasPK = false
     _.forOwn(options.attributes, (f, id) => {
       if (typeof f === 'string') 
         f = { type: f }
@@ -34,6 +54,12 @@ class DabCollection {
         hidden: f.hidden ? true : false,
         sanitizer: f.sanitizer || {},
         validator: f.validator || {}
+      }
+      if (f.primaryKey) {
+        if (hasPK)
+          throw new Error('Already has primary key')
+        hasPK = true
+        field.primaryKey = true
       }
       if (typeof f.mask === 'string' && !_.isEmpty(f.mask))
         field.mask = f.mask
@@ -48,45 +74,28 @@ class DabCollection {
             field.default = f.default
           break
         case 'integer':
-          if (!_.has(field.validator, 'isInteger'))
-            field.validator.isInteger = true
-          if (!_.has(field.sanitizer, 'toInteger'))
-            field.sanitizer.toInteger = true
+          field = setFieldDef(field, f.type)
           if (typeof f.default === 'number')
             field.default = Math.round(f.default)
           break
         case 'float':
-          if (!_.has(field.validator, 'isFloat'))
-            field.validator.isFloat = true
-          if (!_.has(field.sanitizer, 'toFloat'))
-            field.sanitizer.toFloat = true
+          field = setFieldDef(field, f.type)
           if (typeof f.default === 'number')
             field.default = f.default
           break
         case 'boolean':
-          if (!_.has(field.validator, 'isBoolean'))
-            field.validator.isBoolean = true
-          if (!_.has(field.sanitizer, 'toBoolean'))
-            field.sanitizer.toBoolean = true
+          field = setFieldDef(field, f.type)
           if (typeof f.default === 'boolean')
             field.default = f.default
           break
+        case 'datetime':
         case 'date': 
-          if (!_.has(field.validator, 'isDate'))
-            field.validator.isDate = true
-          if (!_.has(field.sanitizer, 'toDate'))
-            field.sanitizer.toDate = true
+          field = setFieldDef(field, f.type)
           if (typeof f.default === 'string' && !_.isEmpty(f.default))
             field.default = f.default
           break
-        case 'datetime': 
-          if (!_.has(field.validator, 'isDatetime'))
-            field.validator.isDatetime = true
-          if (!_.has(field.sanitizer, 'toDatetime'))
-            field.sanitizer.toDatetime = true
-          if (typeof f.default === 'string' && !_.isEmpty(f.default))
-            field.default = f.default
-          break
+        default:
+          field = setFieldDef(field, f.type)
       }
       this.attributes[id] = field
     })
@@ -96,10 +105,40 @@ class DabCollection {
       if (keys.indexOf(k) === -1)
         _.pullAt(this.order, i)
     })
+    if (_.isArray(options.indexes)) {
+      let idx = {}
+      _.each(options.indexes, i => {
+        if (keys.indexOf(i) === -1)
+          return
+        idx[i] = true
+      })
+      options.indexes = idx
+    }
+    _.forOwn(options.indexes, (i, id) => {
+      if (keys.indexOf(id) > -1 && i === true) {
+        this.indexes[id] = {
+          column: [id],
+          unique: false
+        }
+        return
+      }
+      let idx = {
+        column: _.isArray(i.column) ? i.column : [i.column],
+        unique: i.unique === true
+      }
+      let pos = []
+      _.each(idx.column, (c, ix) => {
+        if (keys.indexOf(c) === -1) 
+          pos.push(ix)
+      })
+      if (pos.length > 0)
+        _.pullAt(idx.column, pos)
+      this.indexes[id] = idx
+    })
     return this
   }  
 
-  convertDoc (doc) {
+  convertDoc (doc, skipSanitize = false) {
     if (_.isEmpty(this.attributes)) return doc
     let newDoc = {}
     _.each(this.order, o => {
@@ -107,6 +146,8 @@ class DabCollection {
       if (field && !field.hidden) 
         newDoc[field.mask || o] = doc[o] || null
     })
+    if (!skipSanitize)
+      newDoc = sanitization.sanitize(newDoc, this.attributes)
     return newDoc
   }
 

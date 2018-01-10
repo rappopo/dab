@@ -4,6 +4,7 @@ const chai = require('chai'),
   chaiAsPromised = require('chai-as-promised'),
   chaiSubset = require('chai-subset'),
   expect = chai.expect,
+  moment = require('moment'),
   _ = require('lodash')
 
 chai.use(chaiSubset)
@@ -71,7 +72,44 @@ describe('Dab - convert', function () {
 
       done()      
     })
+  })
 
+  it('should convert body according to its attribute if it provided', function(done) {
+    const cls = new Cls()
+    cls.createCollection({
+      name: 'test',
+      attributes: {
+        key1: 'datetime',
+        key2: 'date',
+        key3: 'string',
+        key4: 'integer',
+        key5: 'float',
+        key6: 'boolean',
+        key7: 'array',
+        key8: 'object'
+      }
+    }).then(function(coll) {
+      const dt = moment(new Date()).toISOString()
+      let result = cls.convert({
+        key1: dt,
+        key2: dt,
+        key3: 12345,
+        key4: '12345',
+        key5: '456.78',
+        key6: 'true',
+        key7: '["a", "b"]',
+        key8: { "a": "test", "b": 1 }
+      }, { collection: 'test' })
+      expect(result.key1).to.equal(moment(dt).toISOString())
+      expect(result.key2).to.equal(moment(dt).toISOString().substr(0, 10))
+      expect(result.key3).to.equal('12345')
+      expect(result.key4).to.equal(12345)
+      expect(result.key5).to.equal(456.78)
+      expect(result.key6).to.equal(true)
+      expect(result.key7).to.eql(['a', 'b'])
+      expect(result.key8).to.eql({ a: 'test', b: 1 })
+      done()      
+    })
   })
 
 

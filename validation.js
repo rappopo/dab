@@ -4,6 +4,8 @@ const validatorJs = require('validator'),
   _ = require('lodash'),
   moment = require('moment')
 
+moment.suppressDeprecationWarnings = true
+
 const supportedValidatorJs = ['required', 'contains', 'equals', 'isAfter', 'isAlpha', 'isAlphaNumeric', 'isAscii',
   'isBase64', 'isBefore', 'isBoolean', 'isCreditCard', 'isCurrency', 'isDataURI', 'isDecimal',
   'isDivisibleBy', 'isEmail', 'isFQDN', 'isFloat', 'isFloat', 'isHash', 'isHexColor', 'isHexadecimal',
@@ -29,12 +31,33 @@ validator.isDatetime = function (value, format) {
   return moment(value, format).isValid()
 }
 
+validator.isObject = function (value) {
+  try {
+    let val = JSON.parse(value)
+    return _.isPlainObject(val)
+  } catch (e) {
+    return false
+  }
+}
+
+validator.isArray = function (value) {
+  try {
+    let val = JSON.parse(value)
+    return _.isArray(val)
+  } catch (e) {
+    return false
+  }
+}
+
 const supported = _.keys(validator)
 
 function checkField (field, value) {
   if (value === undefined || value === null)
     value = ''
-  value = value + ''
+  if (['object', 'array'].indexOf(field.type) > -1)
+    value = JSON.stringify(value)
+  else
+    value = value + ''
   let err = []
   _.forOwn(_.cloneDeep(field.validator), (v, k) => {
     let result = true

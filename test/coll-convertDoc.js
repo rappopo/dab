@@ -25,7 +25,7 @@ describe('Collection - convertDoc', function () {
     })
 
     let result = cls.convertDoc(body)
-    
+
     expect(result).to.have.property('_id', 'james-bond')
     expect(result).to.have.property('name', 'James Bond')
     expect(result).to.have.property('age', 35)

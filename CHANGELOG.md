@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0
+
+* Collection: added attribIdType
+* Collection: added indexes support
+* Collection: added object & array support
+* Collection: added id column if missing
+* Collection: change internal date/time from JsDate to ISO8601
+* Sanitization: fix date/time sanitizer
+
 ## 0.4.0
 
 * Collection: change fields to attributes

@@ -45,7 +45,7 @@ describe('Collection - setOptions', function () {
       }
     })
     let keys = _.keys(cls.attributes)
-    expect(keys).to.eql(['key1', 'key2', 'key3', 'key4', 'key5', 'key6', 'key7'])
+    expect(keys).to.eql(['key1', 'key2', 'key3', 'key4', 'key5', 'key6', 'key7', '_id'])
   })
 
   it('should return string length of 255 for strings that don\'t have length', function () {
@@ -93,7 +93,7 @@ describe('Collection - setOptions', function () {
         key3: 'string'
       }
     })
-    expect(cls.order).to.eql(['key1', 'key2', 'key3'])
+    expect(cls.order).to.eql(['key1', 'key2', 'key3', '_id'])
   })
 
   it('should return custom order with non existing attributes removed', function () {
@@ -108,6 +108,92 @@ describe('Collection - setOptions', function () {
     })
     expect(cls.order).to.eql(['key3', 'key2', 'key1'])
   })
+
+  it('should add id column if not provided', function () {
+    const cls = new Cls({
+      name: 'test',
+      attributes: {
+        key1: 'string',
+        key2: 'string',
+        key3: 'string'
+      }
+    })
+    expect(cls.order).to.eql(['key1', 'key2', 'key3', '_id'])
+  })
+
+  it('should throw error if multiple primaryKeys are defined', function () {
+    let fn = function() {
+      const cls = new Cls({
+        name: 'test',
+        attributes: {
+          key1: {
+            type: 'string',
+            primaryKey: true
+          },
+          key2: 'string',
+          key3: 'string'
+        }
+      })      
+    }
+    expect(fn).to.throw('Already has primary key')
+  })
+
+  it('should parse indexes correctly from array', function () {
+    const cls = new Cls({
+      name: 'test',
+      attributes: {
+        key1: 'string',
+        key2: 'string',
+        key3: 'string'
+      },
+      indexes: ['key1', 'key2']
+    })
+    expect(cls.indexes).to.eql({ 
+      key1: { column: ['key1'], unique: false },
+      key2: { column: ['key2'], unique: false }
+    })
+  })
+
+  it('should ignore index\'s columns that don\'t exist', function () {
+    const cls = new Cls({
+      name: 'test',
+      attributes: {
+        key1: 'string',
+        key2: 'string',
+        key3: 'string'
+      },
+      indexes: ['key1', 'key2', 'key4']
+    })
+    expect(cls.indexes).to.eql({ 
+      key1: { column: ['key1'], unique: false },
+      key2: { column: ['key2'], unique: false }
+    })
+  })
+
+  it('should parse indexes correctly from object', function () {
+    const cls = new Cls({
+      name: 'test',
+      attributes: {
+        key1: 'string',
+        key2: 'string',
+        key3: 'string'
+      },
+      indexes: {
+        index1: {
+          column: 'key1',
+          unique: true
+        },
+        index2: {
+          column: ['key1', 'key2', 'key6']
+        }
+      }
+    })
+    expect(cls.indexes).to.eql({ 
+      index1: { column: ['key1'], unique: true },
+      index2: { column: ['key1', 'key2'], unique: false },
+    })
+  })
+
 
 })  
 
