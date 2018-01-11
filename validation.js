@@ -7,12 +7,12 @@ const validatorJs = require('validator'),
 moment.suppressDeprecationWarnings = true
 
 const supportedValidatorJs = ['required', 'contains', 'equals', 'isAfter', 'isAlpha', 'isAlphaNumeric', 'isAscii',
-  'isBase64', 'isBefore', 'isBoolean', 'isCreditCard', 'isCurrency', 'isDataURI', 'isDecimal',
-  'isDivisibleBy', 'isEmail', 'isFQDN', 'isFloat', 'isFloat', 'isHash', 'isHexColor', 'isHexadecimal',
-  'isIP', 'isISBN', 'isISSN', 'isISIN', 'isISO8601', 'isISO31661Alpha2', 'isISRC',
-  'isIn', 'isInt', 'isLatLong', 'isLength', 'isLowercase', 'isMACAddress', 'isMD5', 'isMimeType',
-  'isMobilePhone', 'isMongoId', 'isNumeric', 'isPort', 'isPostalCode', 'isSurrogatePair', 
-  'isURL', 'isUUID', 'isUppercase', 'isWhitelisted', 'matches']
+  'isBase64', 'isBefore', 'isBoolean', 'isByteLength', 'isCreditCard', 'isCurrency', 'isDataURI', 'isDecimal',
+  'isDivisibleBy', 'isEmail', 'isFQDN', 'isFloat', 'isFloat', 'isFullWidth', 'isHalfWidth', 'isHash', 'isHexColor', 
+  'isHexadecimal', 'isIP', 'isISBN', 'isISSN', 'isISIN', 'isISO8601', 'isISO31661Alpha2', 'isISRC',
+  'isIn', 'isInt', 'isJSON', 'isLatLong', 'isLength', 'isLowercase', 'isMACAddress', 'isMD5', 'isMimeType',
+  'isMobilePhone', 'isMongoId', 'isMultibyte', 'isNumeric', 'isPort', 'isPostalCode', 'isSurrogatePair', 
+  'isURL', 'isUUID', 'isUppercase', 'isVariableWidth', 'isWhitelisted', 'matches']
 
 let validator = {}
 _.each(supportedValidatorJs, v => {
@@ -47,6 +47,22 @@ validator.isArray = function (value) {
   } catch (e) {
     return false
   }
+}
+
+validator.isAfter = function (value, dt, format) {
+  if (!dt) 
+    return validatorJs.isAfter(value)
+  let m = _.isEmpty(format) ? moment(dt) : moment(dt, format)
+  if (!m.isValid()) return false
+  return validatorJs.isAfter(value, m.toDate())
+}
+
+validator.isBefore = function (value, dt, format) {
+  if (!dt) 
+    return validatorJs.isBefore(value)
+  let m = _.isEmpty(format) ? moment(dt) : moment(dt, format)
+  if (!m.isValid()) return false
+  return validatorJs.isBefore(value, m.toDate())
 }
 
 const supported = _.keys(validator)

@@ -62,6 +62,38 @@ class Dab {
     params = params || {}
     if (typeof params === 'string') 
       params = { collection: params }
+    // normalize sort
+    if (params.sort) {
+      let sort = {}
+      if (_.isPlainObject(params.sort)) {
+        _.forOwn(params.sort, (v, k) => {
+          v = v + ''
+          sort[k] = v.toLowerCase() === 'desc' || v === '-1' ? -1 : 1
+        })
+      } else if (typeof params.sort === 'string') {
+        let arr = params.sort.split(',')
+        _.each(arr, a => {
+          a = _.trim(a).split(' ')
+          sort[a[0]] = a.length === 1 ? 1 : (a[1].toLowerCase() === 'desc' || a[1] === '-1' ? -1 : 1)
+        })
+      } else if (_.isArray(params.sort)) {
+        _.each(params.sort, s => {
+          if (typeof s === 'string') {
+            sort[s] = 1
+          } else if (_.isPlainObject(s)) {
+            _.forOwn(s, (v, k) => {
+              v = v + ''
+              sort[k] = v.toLowerCase() === 'desc' || v === '-1' ? -1 : 1
+            })
+          }
+        })
+      }
+      if (_.isEmpty(sort))
+        delete params.sort
+      else
+        params.sort = sort
+    }
+
     if (_.isEmpty(body))
       return [params, body]
 

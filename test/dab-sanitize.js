@@ -54,6 +54,56 @@ describe('Dab - sanitize', function () {
       expect(body.key8).to.eql({ a: 'test', b: 1 })
       done()      
     })
-
   })
+
+  it('should return normalized sort from a simple string', function() {
+    const cls = new Cls()
+    let [params] = cls.sanitize({ sort: 'name, age' })
+    expect(params.sort).to.eql({
+      name: 1,
+      age: 1
+    })
+  })
+
+  it('should return normalized sort from a simple string with sort direction', function() {
+    const cls = new Cls()
+    let [params] = cls.sanitize({ sort: 'name desc, age -1, gender 1, email' })
+    expect(params.sort).to.eql({
+      name: -1,
+      age: -1,
+      gender: 1,
+      email: 1
+    })
+  })
+
+  it('should return normalized sort from a simple array', function() {
+    const cls = new Cls()
+    let [params] = cls.sanitize({ sort: ['name', 'age'] })
+    expect(params.sort).to.eql({
+      name: 1,
+      age: 1
+    })
+  })
+
+  it('should return normalized sort from an array with sort direction', function() {
+    const cls = new Cls()
+    let [params] = cls.sanitize({ sort: ['name', { age: 'desc' }, { email: -1 }] })
+    expect(params.sort).to.eql({
+      name: 1,
+      age: -1,
+      email: -1
+    })
+  })
+
+  it('should return normalized sort from an object', function() {
+    const cls = new Cls()
+    let [params] = cls.sanitize({ sort: { name: 'asc', age: -1, email: 'desc' } })
+    expect(params.sort).to.eql({
+      name: 1,
+      age: -1,
+      email: -1
+    })
+  })
+
+
 })

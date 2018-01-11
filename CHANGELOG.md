@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.1
+
+* Normalize sort parameter
+* Sort accepts: object, array and string
+* Full support for validator.js's validator & sanitizer
+
 ## 0.5.0
 
 * Collection: added attribIdType
