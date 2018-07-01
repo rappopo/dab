@@ -36,7 +36,7 @@ class Dab {
 
   getClient () {
     if (!this.client) this.setClient()
-    return this.client    
+    return this.client
   }
 
   /**
@@ -52,7 +52,7 @@ class Dab {
       if (typeof params.converter === 'function')
         doc = params.converter(doc)
       if (this.collection[params.collection] && !_.isEmpty(this.collection[params.collection].attributes))
-        doc = this.collection[params.collection].convertDoc(doc, params.skipSanitize) 
+        doc = this.collection[params.collection].convertDoc(doc, params.skipSanitize)
       result[i] = doc
     })
     return isArray ? result : result[0]
@@ -60,7 +60,7 @@ class Dab {
 
   sanitize (params, body) {
     params = params || {}
-    if (typeof params === 'string') 
+    if (typeof params === 'string')
       params = { collection: params }
     // normalize sort
     if (params.sort) {
@@ -159,15 +159,15 @@ class Dab {
   */
 
   bulkCreate(body, params) {
-    return this._notImplemented()    
+    return this._notImplemented()
   }
 
   bulkUpdate(body, params) {
-    return this._notImplemented()    
+    return this._notImplemented()
   }
 
   bulkRemove(body, params) {
-    return this._notImplemented()    
+    return this._notImplemented()
   }
 
   /**
@@ -191,15 +191,15 @@ class Dab {
           return callback(err)
         if (result.data.length === 0)
           return callback()
-        dest.bulkCreate(result.data, { 
-          collection: params.destCollection || params.collection, 
-          withDetail: params.withDetail 
+        dest.bulkCreate(result.data, {
+          collection: params.destCollection || params.collection,
+          withDetail: params.withDetail
         }).asCallback((err, result) => {
           if (err)
             return callback(err)
           endResults.push(result)
           loop(pageNumber + 1, callback)
-        }) 
+        })
       })
     }
 
@@ -360,46 +360,40 @@ class Dab {
 
   createCollection (coll, params) {
     params = params || {}
-    return new Promise((resolve, reject) => {
-      if (typeof coll === 'object')
-        coll = new DabCollection(coll)
-      if (coll.constructor.name !== 'DabCollection')
-        return reject(new Error('Collection must be a DabCollection instance'))
-      if (this._.has(this.collection, coll.name))
-        return reject(new Error('Collection already exists'))
-      this.collection[coll.name] = coll
-      resolve({ success: true })
-    })
+    if (typeof coll === 'object')
+      coll = new DabCollection(coll)
+    if (coll.constructor.name !== 'DabCollection')
+      return Promise.reject(new Error('Collection must be a DabCollection instance'))
+    if (this._.has(this.collection, coll.name))
+      return Promise.reject(new Error('Collection already exists'))
+    this.collection[coll.name] = coll
+    return Promise.resolve(true)
   }
-  
+
   renameCollection (oldName, newName, params) {
     params = params || {}
-    return new Promise((resolve, reject) => {
-      if (this._.isEmpty(oldName) || this._.isEmpty(newName))
-        return reject(new Error('Require old & new collection names'))
-      if (!this._.has(this.collection, oldName))
-        return reject(new Error('Collection not found'))
-      if (this._.has(this.collection, newName))
-        return reject(new Error('New collection already exists'))
-      this.collection[newName] = this._.cloneDeep(this.collection[oldName])
-      this.collection[newName].name = newName
-      delete this.collection[oldName]
-      resolve({ success: true })
-    })
+    if (this._.isEmpty(oldName) || this._.isEmpty(newName))
+      return Promise.reject(new Error('Require old & new collection names'))
+    if (!this._.has(this.collection, oldName))
+      return Promise.reject(new Error('Collection not found'))
+    if (this._.has(this.collection, newName))
+      return Promise.reject(new Error('New collection already exists'))
+    this.collection[newName] = this._.cloneDeep(this.collection[oldName])
+    this.collection[newName].name = newName
+    delete this.collection[oldName]
+    return Promise.resolve(true)
   }
-  
+
   removeCollection (name, params) {
     params = params || {}
-    return new Promise((resolve, reject) => {
-      if (this._.isEmpty(name))
-        return reject(new Error('Requires collection name'))
-      if (!this._.has(this.collection, name))
-        return reject(new Error('Collection not found'))
-      delete this.collection[name]
-      resolve({ success: true })
-    })
+    if (this._.isEmpty(name))
+      return Promise.reject(new Error('Requires collection name'))
+    if (!this._.has(this.collection, name))
+      return Promise.reject(new Error('Collection not found'))
+    delete this.collection[name]
+    return Promise.resolve({ success: true })
   }
-  
+
 }
 
 module.exports = Dab

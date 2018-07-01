@@ -21,7 +21,7 @@ const Cls = require('../dab'),
     _id: 'jack-bauer',
     name: 'Jack Bauer',
     age: 32,
-    code: 'JB'    
+    code: 'JB'
   }]
 
 describe('Dab - convert', function () {
@@ -56,8 +56,8 @@ describe('Dab - convert', function () {
     })
 
     const cls = new Cls()
-    cls.createCollection(collection).asCallback(function(err, status) {
 
+    cls.createCollection(collection).then(function(status) {
       let result = cls.convert(body, { collection: 'test' })
 
       expect(result[0]).to.have.property('_id', 'james-bond')
@@ -70,7 +70,7 @@ describe('Dab - convert', function () {
       expect(result[1]).to.have.property('age', 32)
       expect(result[1]).to.not.have.property('code')
 
-      done()      
+      done()
     })
   })
 
@@ -108,10 +108,7 @@ describe('Dab - convert', function () {
       expect(result.key6).to.equal(true)
       expect(result.key7).to.eql(['a', 'b'])
       expect(result.key8).to.eql({ a: 'test', b: 1 })
-      done()      
+      done()
     })
   })
-
-
-
 })

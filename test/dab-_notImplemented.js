@@ -15,12 +15,4 @@ describe('Dab - _notImplemented', function () {
     const cls = new Cls()
     return expect(cls._notImplemented()).to.eventually.rejectedWith('Not implemented')
   })
-
-  it('should yield error as callback', function (done) {
-    const cls = new Cls()
-    cls._notImplemented().asCallback(function(err, result) {
-      expect(err).to.have.property('message').that.is.equal('Not implemented')
-      done()
-    })
-  })
 })
