@@ -391,7 +391,7 @@ class Dab {
     if (!this._.has(this.collection, name))
       return Promise.reject(new Error('Collection not found'))
     delete this.collection[name]
-    return Promise.resolve({ success: true })
+    return Promise.resolve(true)
   }
 
 }
