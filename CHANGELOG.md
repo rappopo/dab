@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.2
+
+* Include nanoid for auto ID generator
+
 ## 0.5.1
 
 * Normalize sort parameter
@@ -64,7 +68,7 @@
 
 ## 0.0.11
 
-* Making schema as built-in feature because @rappopo/bdez will be refactored as a fullblown ORM/ODM  
+* Making schema as built-in feature because @rappopo/bdez will be refactored as a fullblown ORM/ODM
 
 ## 0.0.10
 

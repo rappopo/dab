@@ -3,6 +3,7 @@
 const _ = require('lodash'),
   fs = require('fs'),
   uuid = require('uuid/v4'),
+  nanoid = require('nanoid'),
   DabCollection = require('./collection')
 
 require('promise.ascallback').patch()
@@ -14,6 +15,7 @@ class Dab {
     this.client = null
     this._ = _
     this.uuid = uuid
+    this.nanoid = nanoid
     this.options = {}
     this.setOptions(options)
   }
