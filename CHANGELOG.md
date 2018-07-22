@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.6.7
+
+* Fix typo, again!
+
+## 0.6.6
+
+* Fix validator.js function name typo isAlphaNumeric to isAlphanumeric
+* Upgrade validator.js to version 10.4.*
+
+## 0.6.5
+
+* Rolling back changes in 0.6.4
+
+## 0.6.4
+
+* Adding utility method: isUnique
+
 ## 0.6.2
 
 * Include nanoid for auto ID generator

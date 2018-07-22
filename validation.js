@@ -6,12 +6,12 @@ const validatorJs = require('validator'),
 
 moment.suppressDeprecationWarnings = true
 
-const supportedValidatorJs = ['required', 'contains', 'equals', 'isAfter', 'isAlpha', 'isAlphaNumeric', 'isAscii',
+const supportedValidatorJs = ['required', 'contains', 'equals', 'isAfter', 'isAlpha', 'isAlphanumeric', 'isAscii',
   'isBase64', 'isBefore', 'isBoolean', 'isByteLength', 'isCreditCard', 'isCurrency', 'isDataURI', 'isDecimal',
-  'isDivisibleBy', 'isEmail', 'isFQDN', 'isFloat', 'isFloat', 'isFullWidth', 'isHalfWidth', 'isHash', 'isHexColor', 
-  'isHexadecimal', 'isIP', 'isISBN', 'isISSN', 'isISIN', 'isISO8601', 'isISO31661Alpha2', 'isISRC',
-  'isIn', 'isInt', 'isJSON', 'isLatLong', 'isLength', 'isLowercase', 'isMACAddress', 'isMD5', 'isMimeType',
-  'isMobilePhone', 'isMongoId', 'isMultibyte', 'isNumeric', 'isPort', 'isPostalCode', 'isSurrogatePair', 
+  'isDivisibleBy', 'isEmail', 'isFQDN', 'isFloat', 'isFloat', 'isFullWidth', 'isHalfWidth', 'isHash', 'isHexColor',
+  'isHexadecimal', 'isIP', 'isIPRange', 'isISBN', 'isISSN', 'isISIN', 'isISO8601', 'isISO31661Alpha2', 'isISO31661Alpha3',
+  'isISRC', 'isIn', 'isInt', 'isJSON', 'isLatLong', 'isLength', 'isLowercase', 'isMACAddress', 'isMD5', 'isMimeType',
+  'isMobilePhone', 'isMongoId', 'isMultibyte', 'isNumeric', 'isPort', 'isPostalCode', 'isSurrogatePair',
   'isURL', 'isUUID', 'isUppercase', 'isVariableWidth', 'isWhitelisted', 'matches']
 
 let validator = {}
@@ -50,7 +50,7 @@ validator.isArray = function (value) {
 }
 
 validator.isAfter = function (value, dt, format) {
-  if (!dt) 
+  if (!dt)
     return validatorJs.isAfter(value)
   let m = _.isEmpty(format) ? moment(dt) : moment(dt, format)
   if (!m.isValid()) return false
@@ -58,7 +58,7 @@ validator.isAfter = function (value, dt, format) {
 }
 
 validator.isBefore = function (value, dt, format) {
-  if (!dt) 
+  if (!dt)
     return validatorJs.isBefore(value)
   let m = _.isEmpty(format) ? moment(dt) : moment(dt, format)
   if (!m.isValid()) return false
@@ -77,7 +77,7 @@ function checkField (field, value) {
   let err = []
   _.forOwn(_.cloneDeep(field.validator), (v, k) => {
     let result = true
-    if (supported.indexOf(k) === -1) 
+    if (supported.indexOf(k) === -1)
       return
     if (_.isFunction(validator[k])) {
       let args
@@ -87,7 +87,7 @@ function checkField (field, value) {
         args = v === true ? [value] : [value, v]
       result = validator[k](...args)
     }
-    if (!result) 
+    if (!result)
       err.push(k)
   })
   return err
