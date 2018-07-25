@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.8
+
+* Fix validation if no validator exists
+
 ## 0.6.7
 
 * Fix typo, again!

@@ -99,7 +99,7 @@ function validate (body, fields, ignored = []) {
     if (ignored.indexOf(id) > -1)
       return
     let result
-    if (f.validator.required || _.has(body, id))
+    if (_.get(f, 'validator.required') || _.has(body, id))
       result = checkField(f, body[id])
     if (!_.isEmpty(result))
       err[id] = result
