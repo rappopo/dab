@@ -1,8 +1,8 @@
 'use strict'
 
-const chai = require('chai'),
-  expect = chai.expect,
-  chaiSubset = require('chai-subset')
+const chai = require('chai')
+const expect = chai.expect
+const chaiSubset = require('chai-subset')
 
 chai.use(chaiSubset)
 
@@ -25,11 +25,8 @@ describe('Dab - setOptions', function () {
     expect(cls.options).to.eql({
       limit: 25,
       key1: 'key1',
-      key2: 'key2',      
+      key2: 'key2',
       options: {}
     })
   })
-
 })
-
-

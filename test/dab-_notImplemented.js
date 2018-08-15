@@ -1,9 +1,9 @@
 'use strict'
 
-const chai = require('chai'),
-  chaiAsPromised = require('chai-as-promised'),
-  chaiSubset = require('chai-subset'),
-  expect = chai.expect
+const chai = require('chai')
+const chaiAsPromised = require('chai-as-promised')
+const chaiSubset = require('chai-subset')
+const expect = chai.expect
 
 chai.use(chaiSubset)
 chai.use(chaiAsPromised)

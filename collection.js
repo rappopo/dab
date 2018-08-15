@@ -1,15 +1,13 @@
 'use strict'
 
-const _ = require('lodash'),
-  validation = require('./validation'),
-  sanitization = require('./sanitization')
+const _ = require('lodash')
+const validation = require('./validation')
+const sanitization = require('./sanitization')
 
-function setFieldDef(field, type) {
+function setFieldDef (field, type) {
   let checker = _.upperFirst(type)
-  if (!_.has(field.validator, 'is' + checker))
-    field.validator['is' + checker] = true
-  if (!_.has(field.sanitizer, 'to' + checker))
-    field.sanitizer['to' + checker] = true
+  if (!_.has(field.validator, 'is' + checker)) field.validator['is' + checker] = true
+  if (!_.has(field.sanitizer, 'to' + checker)) field.sanitizer['to' + checker] = true
   return field
 }
 
@@ -28,71 +26,60 @@ class DabCollection {
 
   setOptions (options) {
     options = options || {}
-    if (_.isEmpty(options.name))
-      throw new Error('Requires a name')
+    if (_.isEmpty(options.name)) throw new Error('Requires a name')
     this.name = options.name
     this.srcAttribId = options.srcAttribId || '_id'
     this.srcAttribIdType = options.srcAttribIdType || 'string'
     this.srcAttribName = options.srcAttribName || 'collection'
-    if (_.isEmpty(options.attributes)) 
-      return this
+    if (_.isEmpty(options.attributes)) return this
     const supported = ['string', 'integer', 'float', 'boolean', 'date', 'datetime', 'text', 'object', 'array']
-    if (!_.has(options.attributes, this.srcAttribId))
+    if (!_.has(options.attributes, this.srcAttribId)) {
       options.attributes[this.srcAttribId] = {
         type: this.srcAttribIdType,
         primaryKey: true
       }
+    }
     let hasPK = false
     _.forOwn(options.attributes, (f, id) => {
-      if (typeof f === 'string') 
-        f = { type: f }
-      if (!_.isPlainObject(f))
-        return
+      if (typeof f === 'string') f = { type: f }
+      if (!_.isPlainObject(f)) return
       if (supported.indexOf(f.type) === -1) return
       let field = {
         type: f.type,
-        hidden: f.hidden ? true : false,
+        hidden: f.hidden,
         sanitizer: f.sanitizer || {},
         validator: f.validator || {}
       }
       if (f.primaryKey) {
-        if (hasPK)
-          throw new Error('Already has primary key')
+        if (hasPK) throw new Error('Already has primary key')
         hasPK = true
         field.primaryKey = true
       }
-      if (typeof f.mask === 'string' && !_.isEmpty(f.mask))
-        field.mask = f.mask
-      switch(f.type) {
-        case 'string': 
+      if (typeof f.mask === 'string' && !_.isEmpty(f.mask)) field.mask = f.mask
+      switch (f.type) {
+        case 'string':
           field.length = parseInt(f.length) || 255
-          if (typeof f.default === 'string')
-            field.default = f.default
+          if (typeof f.default === 'string') field.default = f.default
           break
-        case 'text': 
-          if (typeof f.default === 'string')
-            field.default = f.default
+        case 'text':
+          if (typeof f.default === 'string') field.default = f.default
           break
         case 'integer':
           field = setFieldDef(field, f.type)
-          if (typeof f.default === 'number')
-            field.default = Math.round(f.default)
+          if (typeof f.default === 'number') field.default = Math.round(f.default)
           break
         case 'float':
           field = setFieldDef(field, f.type)
-          if (typeof f.default === 'number')
-            field.default = f.default
+          if (typeof f.default === 'number') field.default = f.default
           break
         case 'boolean':
           field = setFieldDef(field, f.type)
-          if (typeof f.default === 'boolean')
-            field.default = f.default
+          if (typeof f.default === 'boolean') field.default = f.default
           break
         case 'datetime':
-        case 'date': 
+        case 'date':
           field = setFieldDef(field, f.type)
-          if (typeof f.default === 'string' && !_.isEmpty(f.default))
-            field.default = f.default
+          if (typeof f.default === 'string' && !_.isEmpty(f.default)) field.default = f.default
           break
         default:
           field = setFieldDef(field, f.type)
@@ -102,14 +89,12 @@ class DabCollection {
     const keys = _.keys(this.attributes)
     this.order = options.order || keys
     _.each(this.order, (k, i) => {
-      if (keys.indexOf(k) === -1)
-        _.pullAt(this.order, i)
+      if (keys.indexOf(k) === -1) _.pullAt(this.order, i)
     })
     if (_.isArray(options.indexes)) {
       let idx = {}
       _.each(options.indexes, i => {
-        if (keys.indexOf(i) === -1)
-          return
+        if (keys.indexOf(i) === -1) return
         idx[i] = true
       })
       options.indexes = idx
@@ -128,26 +113,22 @@ class DabCollection {
       }
       let pos = []
       _.each(idx.column, (c, ix) => {
-        if (keys.indexOf(c) === -1) 
-          pos.push(ix)
+        if (keys.indexOf(c) === -1) pos.push(ix)
       })
-      if (pos.length > 0)
-        _.pullAt(idx.column, pos)
+      if (pos.length > 0) _.pullAt(idx.column, pos)
       this.indexes[id] = idx
     })
     return this
-  }  
+  }
 
   convertDoc (doc, skipSanitize = false) {
     if (_.isEmpty(this.attributes)) return doc
     let newDoc = {}
     _.each(this.order, o => {
       let field = this.attributes[o]
-      if (field && !field.hidden) 
-        newDoc[field.mask || o] = doc[o] || null
+      if (field && !field.hidden) newDoc[field.mask || o] = doc[o] || null
     })
-    if (!skipSanitize)
-      newDoc = sanitization.sanitize(newDoc, this.attributes)
+    if (!skipSanitize) newDoc = sanitization.sanitize(newDoc, this.attributes)
     return newDoc
   }
 
@@ -162,8 +143,7 @@ class DabCollection {
         delete newDoc[f.mask]
       }
     })
-    if (!skipped)
-      newDoc = sanitization.sanitize(newDoc, this.attributes)
+    if (!skipped) newDoc = sanitization.sanitize(newDoc, this.attributes)
     return newDoc
   }
 
@@ -176,7 +156,6 @@ class DabCollection {
     }
     return null
   }
-
 }
 
 module.exports = DabCollection

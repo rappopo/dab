@@ -1,10 +1,10 @@
 'use strict'
 
-const chai = require('chai'),
-  chaiAsPromised = require('chai-as-promised'),
-  chaiSubset = require('chai-subset'),
-  moment = require('moment'),
-  expect = chai.expect
+const chai = require('chai')
+const chaiAsPromised = require('chai-as-promised')
+const chaiSubset = require('chai-subset')
+const moment = require('moment')
+const expect = chai.expect
 
 chai.use(chaiSubset)
 chai.use(chaiAsPromised)
@@ -14,11 +14,11 @@ const Cls = require('../dab')
 describe('Dab - sanitize', function () {
   it('should return default params if params is a string', function () {
     const cls = new Cls()
-    let [params, body] = cls.sanitize('test1')
+    let params = cls.sanitize('test1')[0]
     expect(params).to.have.property('collection', 'test1')
   })
 
-  it('should sanitize body according to its attribute if it provided', function(done) {
+  it('should sanitize body according to its attribute if it provided', function (done) {
     const cls = new Cls()
     cls.createCollection({
       name: 'test',
@@ -32,9 +32,9 @@ describe('Dab - sanitize', function () {
         key7: 'array',
         key8: 'object'
       }
-    }).then(function(result) {
+    }).then(function (result) {
       const dt = moment(new Date()).toISOString()
-      let [params, body] = cls.sanitize('test', {
+      let body = cls.sanitize('test', {
         key1: dt,
         key2: dt,
         key3: 12345,
@@ -42,8 +42,8 @@ describe('Dab - sanitize', function () {
         key5: '456.78',
         key6: 'true',
         key7: '["a", "b"]',
-        key8: { "a": "test", "b": 1 }
-      })
+        key8: { 'a': 'test', 'b': 1 }
+      })[1]
       expect(body.key1).to.equal(moment(dt).toISOString())
       expect(body.key2).to.equal(moment(dt).toISOString().substr(0, 10))
       expect(body.key3).to.equal('12345')
@@ -52,11 +52,11 @@ describe('Dab - sanitize', function () {
       expect(body.key6).to.equal(true)
       expect(body.key7).to.eql(['a', 'b'])
       expect(body.key8).to.eql({ a: 'test', b: 1 })
-      done()      
+      done()
     })
   })
 
-  it('should return normalized sort from a simple string', function() {
+  it('should return normalized sort from a simple string', function () {
     const cls = new Cls()
     let [params] = cls.sanitize({ sort: 'name, age' })
     expect(params.sort).to.eql({
@@ -65,7 +65,7 @@ describe('Dab - sanitize', function () {
     })
   })
 
-  it('should return normalized sort from a simple string with sort direction', function() {
+  it('should return normalized sort from a simple string with sort direction', function () {
     const cls = new Cls()
     let [params] = cls.sanitize({ sort: 'name desc, age -1, gender 1, email' })
     expect(params.sort).to.eql({
@@ -76,7 +76,7 @@ describe('Dab - sanitize', function () {
     })
   })
 
-  it('should return normalized sort from a simple array', function() {
+  it('should return normalized sort from a simple array', function () {
     const cls = new Cls()
     let [params] = cls.sanitize({ sort: ['name', 'age'] })
     expect(params.sort).to.eql({
@@ -85,7 +85,7 @@ describe('Dab - sanitize', function () {
     })
   })
 
-  it('should return normalized sort from an array with sort direction', function() {
+  it('should return normalized sort from an array with sort direction', function () {
     const cls = new Cls()
     let [params] = cls.sanitize({ sort: ['name', { age: 'desc' }, { email: -1 }] })
     expect(params.sort).to.eql({
@@ -95,7 +95,7 @@ describe('Dab - sanitize', function () {
     })
   })
 
-  it('should return normalized sort from an object', function() {
+  it('should return normalized sort from an object', function () {
     const cls = new Cls()
     let [params] = cls.sanitize({ sort: { name: 'asc', age: -1, email: 'desc' } })
     expect(params.sort).to.eql({
@@ -104,6 +104,4 @@ describe('Dab - sanitize', function () {
       email: -1
     })
   })
-
-
 })

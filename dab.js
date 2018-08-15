@@ -1,10 +1,10 @@
 'use strict'
 
-const _ = require('lodash'),
-  fs = require('fs'),
-  uuid = require('uuid/v4'),
-  nanoid = require('nanoid'),
-  DabCollection = require('./collection')
+const _ = require('lodash')
+const fs = require('fs')
+const uuid = require('uuid/v4')
+const nanoid = require('nanoid')
+const DabCollection = require('./collection')
 
 require('promise.ascallback').patch()
 
@@ -47,14 +47,14 @@ class Dab {
 
   convert (data, params) {
     params = params || {}
-    let isArray = _.isArray(data),
-      result = isArray ? _.cloneDeep(data) : [_.cloneDeep(data)]
+    let isArray = _.isArray(data)
+    let result = isArray ? _.cloneDeep(data) : [_.cloneDeep(data)]
     _.each(result, (r, i) => {
       let doc = this._defConverter(r)
-      if (typeof params.converter === 'function')
-        doc = params.converter(doc)
-      if (this.collection[params.collection] && !_.isEmpty(this.collection[params.collection].attributes))
+      if (typeof params.converter === 'function') doc = params.converter(doc)
+      if (this.collection[params.collection] && !_.isEmpty(this.collection[params.collection].attributes)) {
         doc = this.collection[params.collection].convertDoc(doc, params.skipSanitize)
+      }
       result[i] = doc
     })
     return isArray ? result : result[0]
@@ -62,8 +62,7 @@ class Dab {
 
   sanitize (params, body) {
     params = params || {}
-    if (typeof params === 'string')
-      params = { collection: params }
+    if (typeof params === 'string') params = { collection: params }
     // normalize sort
     if (params.sort) {
       let sort = {}
@@ -90,20 +89,18 @@ class Dab {
           }
         })
       }
-      if (_.isEmpty(sort))
-        delete params.sort
-      else
-        params.sort = sort
+      if (_.isEmpty(sort)) delete params.sort
+      else params.sort = sort
     }
 
-    if (_.isEmpty(body))
-      return [params, body]
+    if (_.isEmpty(body)) return [params, body]
 
-    let isArray = _.isArray(body),
-      result = isArray ? _.cloneDeep(body) : [_.cloneDeep(body)]
+    let isArray = _.isArray(body)
+    let result = isArray ? _.cloneDeep(body) : [_.cloneDeep(body)]
     _.each(result, (r, i) => {
-      if (this.collection[params.collection]  && !_.isEmpty(this.collection[params.collection].attributes))
+      if (this.collection[params.collection] && !_.isEmpty(this.collection[params.collection].attributes)) {
         result[i] = this.collection[params.collection].sanitizeDoc(r, params.skipBody)
+      }
     })
 
     let newBody = isArray ? result : result[0]
@@ -114,8 +111,9 @@ class Dab {
   validateDoc (body, params) {
     body = body || {}
     params = params || {}
-    if (params.collection && this.collection[params.collection]  && !_.isEmpty(this.collection[params.collection].attributes))
+    if (params.collection && this.collection[params.collection] && !_.isEmpty(this.collection[params.collection].attributes)) {
       return this.collection[params.collection].validateDoc(body, params.ignoreColumn || [])
+    }
     return null
   }
 
@@ -160,15 +158,15 @@ class Dab {
   * Bulk
   */
 
-  bulkCreate(body, params) {
+  bulkCreate (body, params) {
     return this._notImplemented()
   }
 
-  bulkUpdate(body, params) {
+  bulkUpdate (body, params) {
     return this._notImplemented()
   }
 
-  bulkRemove(body, params) {
+  bulkRemove (body, params) {
     return this._notImplemented()
   }
 
@@ -176,29 +174,26 @@ class Dab {
   * Util
   */
 
-  _copy(src, dest, params) {
+  _copy (src, dest, params) {
     params = params || {}
     params.limit = params.limit || this.options.limit
     params.query = params.query || {}
-    let me = this, endResults = []
+    let endResults = []
 
-    function loop(pageNumber, callback) {
+    function loop (pageNumber, callback) {
       src.find({
         collection: params.srcCollection || params.collection,
         query: params.query,
         limit: params.limit,
         page: pageNumber
       }).asCallback((err, result) => {
-        if (err)
-          return callback(err)
-        if (result.data.length === 0)
-          return callback()
+        if (err) return callback(err)
+        if (result.data.length === 0) return callback()
         dest.bulkCreate(result.data, {
           collection: params.destCollection || params.collection,
           withDetail: params.withDetail
         }).asCallback((err, result) => {
-          if (err)
-            return callback(err)
+          if (err) return callback(err)
           endResults.push(result)
           loop(pageNumber + 1, callback)
         })
@@ -207,8 +202,7 @@ class Dab {
 
     return new Promise((resolve, reject) => {
       loop(1, (err, result) => {
-        if (err)
-          return reject(err)
+        if (err) return reject(err)
         let data = {
           success: true,
           stat: {
@@ -217,57 +211,52 @@ class Dab {
             total: 0
           }
         }
-        if (params.withDetail)
-          data.detail = []
+        if (params.withDetail) data.detail = []
 
         _.each(endResults, s => {
           data.stat.ok = data.stat.ok + s.stat.ok
           data.stat.fail = data.stat.fail + s.stat.fail
           data.stat.total = data.stat.total + s.stat.total
-          if (params.withDetail)
-            data.detail = data.detail.concat(s.detail)
+          if (params.withDetail) data.detail = data.detail.concat(s.detail)
         })
         resolve(data)
       })
     })
   }
 
-  copyFrom(src, params) {
+  copyFrom (src, params) {
     params = params || {}
 
-    if (typeof src !== 'string')
-      return this._copy(src, this, params)
+    if (typeof src !== 'string') return this._copy(src, this, params)
     return new Promise((resolve, reject) => {
       try {
         const body = JSON.parse(fs.readFileSync(src, 'utf8'))
         this.bulkCreate(body, params)
-        .then(resolve)
-        .catch(reject)
-      } catch(err) {
+          .then(resolve)
+          .catch(reject)
+      } catch (err) {
         reject(err)
       }
     })
   }
 
-  copyTo(dest, params) {
+  copyTo (dest, params) {
     params = params || {}
 
-    if (typeof dest !== 'string')
-      return this._copy(this, dest, params)
+    if (typeof dest !== 'string') return this._copy(this, dest, params)
 
-    let total = 0, me = this
+    let total = 0
+    let me = this
 
-    function loop(pageNumber, callback) {
+    function loop (pageNumber, callback) {
       me.find({
         collection: params.collection,
         query: params.query,
         limit: params.limit,
         page: pageNumber
       }).asCallback((err, result) => {
-        if (err)
-          return callback(err)
-        if (result.data.length === 0)
-          return callback()
+        if (err) return callback(err)
+        if (result.data.length === 0) return callback()
         let data = []
         let prefix = total === 0 ? '' : ',\n'
         me._.each(result.data, d => {
@@ -283,6 +272,7 @@ class Dab {
       try {
         fs.writeFileSync(dest, '[')
         loop(1, (err, result) => {
+          if (err) return reject(err)
           fs.appendFileSync(dest, ']\n')
           let data = {
             success: true,
@@ -362,24 +352,18 @@ class Dab {
 
   createCollection (coll, params) {
     params = params || {}
-    if (typeof coll === 'object')
-      coll = new DabCollection(coll)
-    if (coll.constructor.name !== 'DabCollection')
-      return Promise.reject(new Error('Collection must be a DabCollection instance'))
-    if (this._.has(this.collection, coll.name))
-      return Promise.reject(new Error('Collection already exists'))
+    if (typeof coll === 'object') coll = new DabCollection(coll)
+    if (coll.constructor.name !== 'DabCollection') return Promise.reject(new Error('Collection must be a DabCollection instance'))
+    if (this._.has(this.collection, coll.name)) return Promise.reject(new Error('Collection already exists'))
     this.collection[coll.name] = coll
     return Promise.resolve(true)
   }
 
   renameCollection (oldName, newName, params) {
     params = params || {}
-    if (this._.isEmpty(oldName) || this._.isEmpty(newName))
-      return Promise.reject(new Error('Require old & new collection names'))
-    if (!this._.has(this.collection, oldName))
-      return Promise.reject(new Error('Collection not found'))
-    if (this._.has(this.collection, newName))
-      return Promise.reject(new Error('New collection already exists'))
+    if (this._.isEmpty(oldName) || this._.isEmpty(newName)) return Promise.reject(new Error('Require old & new collection names'))
+    if (!this._.has(this.collection, oldName)) return Promise.reject(new Error('Collection not found'))
+    if (this._.has(this.collection, newName)) return Promise.reject(new Error('New collection already exists'))
     this.collection[newName] = this._.cloneDeep(this.collection[oldName])
     this.collection[newName].name = newName
     delete this.collection[oldName]
@@ -388,14 +372,11 @@ class Dab {
 
   removeCollection (name, params) {
     params = params || {}
-    if (this._.isEmpty(name))
-      return Promise.reject(new Error('Requires collection name'))
-    if (!this._.has(this.collection, name))
-      return Promise.reject(new Error('Collection not found'))
+    if (this._.isEmpty(name)) return Promise.reject(new Error('Requires collection name'))
+    if (!this._.has(this.collection, name)) return Promise.reject(new Error('Collection not found'))
     delete this.collection[name]
     return Promise.resolve(true)
   }
-
 }
 
 module.exports = Dab

@@ -1,28 +1,27 @@
 'use strict'
 
-const chai = require('chai'),
-  chaiAsPromised = require('chai-as-promised'),
-  chaiSubset = require('chai-subset'),
-  expect = chai.expect,
-  moment = require('moment'),
-  _ = require('lodash')
+const chai = require('chai')
+const chaiAsPromised = require('chai-as-promised')
+const chaiSubset = require('chai-subset')
+const expect = chai.expect
+const moment = require('moment')
 
 chai.use(chaiSubset)
 chai.use(chaiAsPromised)
 
-const Cls = require('../dab'),
-  Collection = require('../collection'),
-  body = [{
-    _id: 'james-bond',
-    name: 'James Bond',
-    age: 35,
-    code: '007'
-  }, {
-    _id: 'jack-bauer',
-    name: 'Jack Bauer',
-    age: 32,
-    code: 'JB'
-  }]
+const Cls = require('../dab')
+const Collection = require('../collection')
+let body = [{
+  _id: 'james-bond',
+  name: 'James Bond',
+  age: 35,
+  code: '007'
+}, {
+  _id: 'jack-bauer',
+  name: 'Jack Bauer',
+  age: 32,
+  code: 'JB'
+}]
 
 describe('Dab - convert', function () {
   it('should return an array of converted documents according its converter', function () {
@@ -51,13 +50,13 @@ describe('Dab - convert', function () {
       attributes: {
         _id: 'string',
         name: 'text',
-        age: 'integer',
+        age: 'integer'
       }
     })
 
     const cls = new Cls()
 
-    cls.createCollection(collection).then(function(status) {
+    cls.createCollection(collection).then(function (status) {
       let result = cls.convert(body, { collection: 'test' })
 
       expect(result[0]).to.have.property('_id', 'james-bond')
@@ -74,7 +73,7 @@ describe('Dab - convert', function () {
     })
   })
 
-  it('should convert body according to its attribute if it provided', function(done) {
+  it('should convert body according to its attribute if it provided', function (done) {
     const cls = new Cls()
     cls.createCollection({
       name: 'test',
@@ -88,7 +87,7 @@ describe('Dab - convert', function () {
         key7: 'array',
         key8: 'object'
       }
-    }).then(function(coll) {
+    }).then(function (coll) {
       const dt = moment(new Date()).toISOString()
       let result = cls.convert({
         key1: dt,
@@ -98,7 +97,7 @@ describe('Dab - convert', function () {
         key5: '456.78',
         key6: 'true',
         key7: '["a", "b"]',
-        key8: { "a": "test", "b": 1 }
+        key8: { 'a': 'test', 'b': 1 }
       }, { collection: 'test' })
       expect(result.key1).to.equal(moment(dt).toISOString())
       expect(result.key2).to.equal(moment(dt).toISOString().substr(0, 10))

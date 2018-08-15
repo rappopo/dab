@@ -1,31 +1,18 @@
 'use strict'
 
-const chai = require('chai'),
-  chaiAsPromised = require('chai-as-promised'),
-  chaiSubset = require('chai-subset'),
-  _ = require('lodash'),
-  expect = chai.expect
+const chai = require('chai')
+const chaiAsPromised = require('chai-as-promised')
+const chaiSubset = require('chai-subset')
+const _ = require('lodash')
+const expect = chai.expect
 
 chai.use(chaiSubset)
 chai.use(chaiAsPromised)
 
-const Cls = require('../collection'),
-  body = [{
-    _id: 'james-bond',
-    name: 'James Bond',
-    age: 35,
-    code: '007'
-  }, {
-    _id: 'james-bauer',
-    name: 'Jack Bauer',
-    age: 32,
-    code: 'JB'    
-  }]
-
+const Cls = require('../collection')
 describe('Collection - setOptions', function () {
   it('should return default if collection name isn\'t provided', function () {
-    expect(function() {
-      let cls = new Cls();
+    expect(function () {
     }).to.throw('Requires a name')
   })
 
@@ -122,18 +109,7 @@ describe('Collection - setOptions', function () {
   })
 
   it('should throw error if multiple primaryKeys are defined', function () {
-    let fn = function() {
-      const cls = new Cls({
-        name: 'test',
-        attributes: {
-          key1: {
-            type: 'string',
-            primaryKey: true
-          },
-          key2: 'string',
-          key3: 'string'
-        }
-      })      
+    let fn = function () {
     }
     expect(fn).to.throw('Already has primary key')
   })
@@ -148,7 +124,7 @@ describe('Collection - setOptions', function () {
       },
       indexes: ['key1', 'key2']
     })
-    expect(cls.indexes).to.eql({ 
+    expect(cls.indexes).to.eql({
       key1: { column: ['key1'], unique: false },
       key2: { column: ['key2'], unique: false }
     })
@@ -164,7 +140,7 @@ describe('Collection - setOptions', function () {
       },
       indexes: ['key1', 'key2', 'key4']
     })
-    expect(cls.indexes).to.eql({ 
+    expect(cls.indexes).to.eql({
       key1: { column: ['key1'], unique: false },
       key2: { column: ['key2'], unique: false }
     })
@@ -188,13 +164,9 @@ describe('Collection - setOptions', function () {
         }
       }
     })
-    expect(cls.indexes).to.eql({ 
+    expect(cls.indexes).to.eql({
       index1: { column: ['key1'], unique: true },
-      index2: { column: ['key1', 'key2'], unique: false },
+      index2: { column: ['key1', 'key2'], unique: false }
     })
   })
-
-
-})  
-
-
+})

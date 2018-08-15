@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.9
+
+* Standard JS
+
 ## 0.6.8
 
 * Fix validation if no validator exists

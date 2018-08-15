@@ -1,10 +1,9 @@
 'use strict'
 
-const chai = require('chai'),
-  chaiAsPromised = require('chai-as-promised'),
-  chaiSubset = require('chai-subset'),
-  _ = require('lodash'),
-  expect = chai.expect
+const chai = require('chai')
+const chaiAsPromised = require('chai-as-promised')
+const chaiSubset = require('chai-subset')
+const expect = chai.expect
 
 chai.use(chaiSubset)
 chai.use(chaiAsPromised)
@@ -12,7 +11,6 @@ chai.use(chaiAsPromised)
 const Cls = require('../collection')
 
 describe('Collection - sanitizeDoc', function () {
-
   it('should return as is if no attributes provided', function () {
     const cls = new Cls({
       name: 'test'
@@ -24,7 +22,6 @@ describe('Collection - sanitizeDoc', function () {
       age: 35,
       code: '007'
     })
-    
     expect(result).to.have.property('_id', 'james-bond')
     expect(result).to.have.property('name', 'James Bond')
     expect(result).to.have.property('age', 35)
@@ -39,7 +36,7 @@ describe('Collection - sanitizeDoc', function () {
         kint: 'integer',
         kfloat: 'float',
         kboolean: 'boolean',
-        kany: 'string',
+        kany: 'string'
       }
     })
     let result = cls.sanitizeDoc({
@@ -47,7 +44,7 @@ describe('Collection - sanitizeDoc', function () {
       kint: 123456,
       kfloat: 123.456,
       kboolean: 'false',
-      kany: 'John Doe'     
+      kany: 'John Doe'
     })
 
     expect(result).to.have.property('kstring', '123456')
@@ -65,7 +62,7 @@ describe('Collection - sanitizeDoc', function () {
         kint: 'integer',
         kfloat: 'float',
         kboolean: 'boolean',
-        kany: 'string',
+        kany: 'string'
       }
     })
     let result = cls.sanitizeDoc({
@@ -73,7 +70,7 @@ describe('Collection - sanitizeDoc', function () {
       kint: 123456,
       kfloat: 123.456,
       kboolean: 'false',
-      kany: 'John Doe'     
+      kany: 'John Doe'
     }, true)
 
     expect(result).to.have.property('kstring', 123456)
@@ -91,7 +88,7 @@ describe('Collection - sanitizeDoc', function () {
         kint: 'integer',
         kfloat: 'float',
         kboolean: 'boolean',
-        kany: 'string',
+        kany: 'string'
       }
     })
     let result = cls.sanitizeDoc({
@@ -132,6 +129,4 @@ describe('Collection - sanitizeDoc', function () {
     expect(result).to.have.property('kboolean', false)
     expect(result).to.have.property('kany', 'John Doe')
   })
-
-
 })

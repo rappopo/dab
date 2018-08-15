@@ -1,24 +1,23 @@
 'use strict'
 
-const chai = require('chai'),
-  chaiAsPromised = require('chai-as-promised'),
-  chaiSubset = require('chai-subset'),
-  _ = require('lodash'),
-  expect = chai.expect
+const chai = require('chai')
+const chaiAsPromised = require('chai-as-promised')
+const chaiSubset = require('chai-subset')
+const _ = require('lodash')
+const expect = chai.expect
 
 chai.use(chaiSubset)
 chai.use(chaiAsPromised)
 
-const Cls = require('../collection'),
-  body = {
-    _id: 'james-bond',
-    name: 'James Bond',
-    age: 35,
-    code: '007'
-  }
+const Cls = require('../collection')
+let body = {
+  _id: 'james-bond',
+  name: 'James Bond',
+  age: 35,
+  code: '007'
+}
 
 describe('Collection - convertDoc', function () {
-
   it('should return as is if no attributes provided', function () {
     const cls = new Cls({
       name: 'test'
@@ -32,7 +31,6 @@ describe('Collection - convertDoc', function () {
     expect(result).to.have.property('code', '007')
   })
 
-
   it('should only return values whose id is in the attributes', function () {
     const cls = new Cls({
       name: 'test',
@@ -44,7 +42,6 @@ describe('Collection - convertDoc', function () {
     })
 
     let result = cls.convertDoc(body)
-    
     expect(result).to.have.property('_id', 'james-bond')
     expect(result).to.have.property('name', 'James Bond')
     expect(result).to.have.property('age', 35)
@@ -62,8 +59,8 @@ describe('Collection - convertDoc', function () {
       }
     })
 
-    let result = cls.convertDoc(body),
-      keys = _.keys(result)
+    let result = cls.convertDoc(body)
+    let keys = _.keys(result)
 
     expect(result).to.eql(_.omit(body, 'code'))
     expect(keys[0]).to.equal('age')
@@ -80,7 +77,6 @@ describe('Collection - convertDoc', function () {
         age: { type: 'integer', mask: 'usia' }
       }
     })
-    
     let result = cls.convertDoc(body)
     expect(result).to.eql({ ident: 'james-bond', 'nama': 'James Bond', usia: 35 })
   })
@@ -95,7 +91,6 @@ describe('Collection - convertDoc', function () {
         code: { type: 'string' }
       }
     })
-    
     let result = cls.convertDoc(body)
 
     expect(result).to.have.property('_id', 'james-bond')
@@ -103,5 +98,4 @@ describe('Collection - convertDoc', function () {
     expect(result).to.not.have.property('age')
     expect(result).to.have.property('code', '007')
   })
-
 })

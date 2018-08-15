@@ -1,8 +1,8 @@
 'use strict'
 
-const validatorJs = require('validator'),
-  _ = require('lodash'),
-  moment = require('moment')
+const validatorJs = require('validator')
+const _ = require('lodash')
+const moment = require('moment')
 
 moment.suppressDeprecationWarnings = true
 
@@ -50,16 +50,14 @@ validator.isArray = function (value) {
 }
 
 validator.isAfter = function (value, dt, format) {
-  if (!dt)
-    return validatorJs.isAfter(value)
+  if (!dt) return validatorJs.isAfter(value)
   let m = _.isEmpty(format) ? moment(dt) : moment(dt, format)
   if (!m.isValid()) return false
   return validatorJs.isAfter(value, m.toDate())
 }
 
 validator.isBefore = function (value, dt, format) {
-  if (!dt)
-    return validatorJs.isBefore(value)
+  if (!dt) return validatorJs.isBefore(value)
   let m = _.isEmpty(format) ? moment(dt) : moment(dt, format)
   if (!m.isValid()) return false
   return validatorJs.isBefore(value, m.toDate())
@@ -68,27 +66,20 @@ validator.isBefore = function (value, dt, format) {
 const supported = _.keys(validator)
 
 function checkField (field, value) {
-  if (value === undefined || value === null)
-    value = ''
-  if (['object', 'array'].indexOf(field.type) > -1)
-    value = JSON.stringify(value)
-  else
-    value = value + ''
+  if (value === undefined || value === null) value = ''
+  if (['object', 'array'].indexOf(field.type) > -1) value = JSON.stringify(value)
+  else value = value + ''
   let err = []
   _.forOwn(_.cloneDeep(field.validator), (v, k) => {
     let result = true
-    if (supported.indexOf(k) === -1)
-      return
+    if (supported.indexOf(k) === -1) return
     if (_.isFunction(validator[k])) {
       let args
-      if (_.isArray(v))
-        args = [value, ...v]
-      else
-        args = v === true ? [value] : [value, v]
+      if (_.isArray(v)) args = [value, ...v]
+      else args = v === true ? [value] : [value, v]
       result = validator[k](...args)
     }
-    if (!result)
-      err.push(k)
+    if (!result) err.push(k)
   })
   return err
 }
@@ -96,17 +87,13 @@ function checkField (field, value) {
 function validate (body, fields, ignored = []) {
   let err = {}
   _.forOwn(fields, (f, id) => {
-    if (ignored.indexOf(id) > -1)
-      return
+    if (ignored.indexOf(id) > -1) return
     let result
-    if (_.get(f, 'validator.required') || _.has(body, id))
-      result = checkField(f, body[id])
-    if (!_.isEmpty(result))
-      err[id] = result
+    if (_.get(f, 'validator.required') || _.has(body, id)) result = checkField(f, body[id])
+    if (!_.isEmpty(result)) err[id] = result
   })
   return _.isEmpty(err) ? null : err
 }
-
 
 module.exports = {
   validate: validate,
