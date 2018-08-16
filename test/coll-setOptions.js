@@ -10,14 +10,17 @@ chai.use(chaiSubset)
 chai.use(chaiAsPromised)
 
 const Cls = require('../collection')
+let cls = null
+
 describe('Collection - setOptions', function () {
   it('should return default if collection name isn\'t provided', function () {
     expect(function () {
+      cls = new Cls()
     }).to.throw('Requires a name')
   })
 
   it('should only return attributes with supported types', function () {
-    const cls = new Cls({
+    cls = new Cls({
       name: 'test',
       attributes: {
         key1: 'string',
@@ -36,7 +39,7 @@ describe('Collection - setOptions', function () {
   })
 
   it('should return string length of 255 for strings that don\'t have length', function () {
-    const cls = new Cls({
+    cls = new Cls({
       name: 'test',
       attributes: {
         key1: 'string',
@@ -48,7 +51,7 @@ describe('Collection - setOptions', function () {
   })
 
   it('should return the correct default values if provided', function () {
-    const cls = new Cls({
+    cls = new Cls({
       name: 'test',
       attributes: {
         key1: { type: 'string', default: 'default' },
@@ -72,7 +75,7 @@ describe('Collection - setOptions', function () {
   })
 
   it('should return default order', function () {
-    const cls = new Cls({
+    cls = new Cls({
       name: 'test',
       attributes: {
         key1: 'string',
@@ -84,7 +87,7 @@ describe('Collection - setOptions', function () {
   })
 
   it('should return custom order with non existing attributes removed', function () {
-    const cls = new Cls({
+    cls = new Cls({
       name: 'test',
       order: ['key4', 'key3', 'key2', 'key1'],
       attributes: {
@@ -97,7 +100,7 @@ describe('Collection - setOptions', function () {
   })
 
   it('should add id column if not provided', function () {
-    const cls = new Cls({
+    cls = new Cls({
       name: 'test',
       attributes: {
         key1: 'string',
@@ -110,12 +113,23 @@ describe('Collection - setOptions', function () {
 
   it('should throw error if multiple primaryKeys are defined', function () {
     let fn = function () {
+      cls = new Cls({
+        name: 'test',
+        attributes: {
+          key1: {
+            type: 'string',
+            primaryKey: true
+          },
+          key2: 'string',
+          key3: 'string'
+        }
+      })
     }
     expect(fn).to.throw('Already has primary key')
   })
 
   it('should parse indexes correctly from array', function () {
-    const cls = new Cls({
+    cls = new Cls({
       name: 'test',
       attributes: {
         key1: 'string',
@@ -131,7 +145,7 @@ describe('Collection - setOptions', function () {
   })
 
   it('should ignore index\'s columns that don\'t exist', function () {
-    const cls = new Cls({
+    cls = new Cls({
       name: 'test',
       attributes: {
         key1: 'string',
@@ -147,7 +161,7 @@ describe('Collection - setOptions', function () {
   })
 
   it('should parse indexes correctly from object', function () {
-    const cls = new Cls({
+    cls = new Cls({
       name: 'test',
       attributes: {
         key1: 'string',

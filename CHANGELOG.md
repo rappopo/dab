@@ -2,7 +2,7 @@
 
 ## 0.6.9
 
-* Standard JS
+* Standard JS compliance
 
 ## 0.6.8
 
