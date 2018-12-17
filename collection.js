@@ -143,6 +143,9 @@ class DabCollection {
         delete newDoc[f.mask]
       }
     })
+    // delete all keys that aren't in attributes
+    const keys = _.keys(this.attributes)
+    if (keys.length > 0) newDoc = _.pick(newDoc, keys)
     if (!skipped) newDoc = sanitization.sanitize(newDoc, this.attributes)
     return newDoc
   }

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.10
+
+* Filter out document properties on non existing attribute while sanitizing
+
 ## 0.6.9
 
 * Standard JS compliance
