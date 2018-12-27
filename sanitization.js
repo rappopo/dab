@@ -21,9 +21,10 @@ sanitizer.toDatetime = function (value, format) {
 }
 
 sanitizer.toDate = function (value, format) {
-  let m = _.isEmpty(format) ? moment(value) : moment(value, format)
-  if (!m.isValid) return null
-  return m.toISOString().substr(0, 10)
+  if (!format) format = 'YYYY-MM-DD'
+  let m = moment(value, format)
+  if (!m.isValid()) return null
+  return value
 }
 
 sanitizer.toBoolean = function (value) {

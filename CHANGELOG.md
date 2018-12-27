@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.11
+
+* Bug fix on toDate sanitazion
+
 ## 0.6.10
 
 * Filter out document properties on non existing attribute while sanitizing
