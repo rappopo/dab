@@ -89,7 +89,7 @@ function validate (body, fields, ignored = []) {
   _.forOwn(fields, (f, id) => {
     if (ignored.indexOf(id) > -1) return
     let result
-    if (_.get(f, 'validator.required') || _.has(body, id)) result = checkField(f, body[id])
+    if (_.get(f, 'validator.required') || (_.has(body, id) && [null, undefined].indexOf(body[id]) === -1)) result = checkField(f, body[id])
     if (!_.isEmpty(result)) err[id] = result
   })
   return _.isEmpty(err) ? null : err

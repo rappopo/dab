@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.12
+
+* Allow validation if not required and null is given
+
 ## 0.6.11
 
 * Bug fix on toDate sanitazion
