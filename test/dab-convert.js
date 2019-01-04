@@ -91,7 +91,7 @@ describe('Dab - convert', function () {
       const dt = moment(new Date()).toISOString()
       let result = cls.convert({
         key1: dt,
-        key2: dt,
+        key2: dt.substr(0, 10),
         key3: 12345,
         key4: '12345',
         key5: '456.78',

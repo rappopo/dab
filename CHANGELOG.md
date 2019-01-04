@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.13
+
+* Throw error for invalid index
+* Better support for `array` type
+
 ## 0.6.12
 
 * Allow validation if not required and null is given

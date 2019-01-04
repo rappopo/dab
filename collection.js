@@ -72,6 +72,10 @@ class DabCollection {
           field = setFieldDef(field, f.type)
           if (typeof f.default === 'number') field.default = f.default
           break
+        case 'array':
+          field = setFieldDef(field, f.type)
+          if (f.subTypeOf) field.subTypeOf = f.subTypeOf
+          break
         case 'boolean':
           field = setFieldDef(field, f.type)
           if (typeof f.default === 'boolean') field.default = f.default
@@ -116,6 +120,7 @@ class DabCollection {
         if (keys.indexOf(c) === -1) pos.push(ix)
       })
       if (pos.length > 0) _.pullAt(idx.column, pos)
+      if (idx.column.length === 0) throw new Error('Invalid index')
       this.indexes[id] = idx
     })
     return this
