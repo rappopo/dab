@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.14
+
+* Bug fix: collection's convertDoc now correctly convert boolean value
+
 ## 0.6.13
 
 * Throw error for invalid index

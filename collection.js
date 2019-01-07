@@ -131,7 +131,7 @@ class DabCollection {
     let newDoc = {}
     _.each(this.order, o => {
       let field = this.attributes[o]
-      if (field && !field.hidden) newDoc[field.mask || o] = doc[o] || null
+      if (field && !field.hidden) newDoc[field.mask || o] = doc[o]
     })
     if (!skipSanitize) newDoc = sanitization.sanitize(newDoc, this.attributes)
     return newDoc
